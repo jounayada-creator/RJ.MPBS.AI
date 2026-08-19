@@ -87,7 +87,6 @@
         .user-msg { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
         .ai-msg { background: #1a2234; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
         
-        /* ভয়েস রিড আউট বাটন */
         .speak-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.85rem; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
         .speak-btn:hover { text-decoration: underline; }
 
@@ -154,7 +153,7 @@
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
             <h1>RJ MPBS AI</h1>
             <p>আপনার জিমেইল দিয়ে স্টুডিওতে প্রবেশ করুন</p>
-            <input type="text" id="userNameInput" placeholder="আপনার জিমেইল (যেমন: yasin@gmail.com)">
+            <input type="text" id="userNameInput" placeholder="আপনার জিমেইল (যেমন: jounayada@gmail.com)">
             <button onclick="loginUser()">শুরু করুন</button>
         </div>
     </div>
@@ -164,7 +163,7 @@
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
             RJ MPBS AI - Studio
         </div>
-        <div class="free-badge">🎉 লাইভ ভয়েস ও এআই অ্যাসিস্ট্যান্ট</div>
+        <div class="free-badge" id="roleBadge">🎉 লাইভ এআই অ্যাসিস্ট্যান্ট</div>
     </header>
 
     <div class="main-workspace">
@@ -172,7 +171,7 @@
             <div class="agent-preview-box">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" alt="AI Agent">
                 <div class="agent-title">RJ Live Expert</div>
-                <div class="agent-sub">● ভয়েস ও চ্যাট একটিভ</div>
+                <div class="agent-sub" id="agentStatusText">● একটিভ এবং প্রস্তুত</div>
             </div>
 
             <div class="tool-category">
@@ -188,7 +187,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">হ্যালো, ইউজার</div>
-                    <div class="welcome-subtitle">আমি আপনার পার্সোনাল ভয়েস এআই অ্যাসিস্ট্যান্ট। কথা বলুন, শুনুন এবং যেকোনো বিষয়ে সাহায্য নিন!</div>
+                    <div class="welcome-subtitle">আমি আপনার পার্সোনাল এআই অ্যাসিস্ট্যান্ট। লোকেশন, ভয়েস এবং চ্যাট হিস্টরি সংরক্ষণের সুবিধা সহ প্রস্তুত!</div>
                 </div>
             </div>
 
@@ -198,11 +197,12 @@
                     <div class="plus-menu" id="plusMenu">
                         <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 ছবি বা ফাইল দিন</div>
                         <div class="menu-option" onclick="triggerTool('আমাকে একটি দারুণ আইডিয়া দিন।'); togglePlusMenu();">💡 আইডিয়া নিন</div>
+                        <div class="menu-option" onclick="clearChatHistory(); togglePlusMenu();">🗑️ হিস্টরি মুছুন</div>
                     </div>
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="আপনার বার্তা বা ভয়েস কমান্ড দিন..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="আপনার বার্তা বা অ্যাডমিন অর্ডার এখানে লিখুন..." onkeypress="if(event.key==='Enter') sendMessage()">
 
                 <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice Input">🎤</button>
 
@@ -215,24 +215,39 @@
 
     <script>
         let currentUser = "User";
+        let userEmail = "";
+        let isAdmin = false;
         let recognition = null;
         let isRecording = false;
 
+        // আপনার নির্দিষ্ট অ্যাডমিন জিমেইল আইডি এখানে সেট করা হলো
+        const ADMIN_EMAIL = "jounayada@gmail.com";
+
         function loginUser() {
-            let emailInput = document.getElementById('userNameInput').value.trim();
+            let emailInput = document.getElementById('userNameInput').value.trim().toLowerCase();
             if(!emailInput) {
                 alert('দয়া করে আপনার জিমেইল লিখুন।');
                 return;
             }
             
-            let cleanName = emailInput;
-            if(emailInput.includes('@')) {
-                cleanName = emailInput.split('@')[0];
+            userEmail = emailInput;
+            let cleanName = userEmail;
+            if(userEmail.includes('@')) {
+                cleanName = userEmail.split('@')[0];
             }
             currentUser = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
             
+            // আপনার নির্দিষ্ট জিমেইল আইডি চেক করে অ্যাডমিন নিশ্চিত করা হচ্ছে
+            if(userEmail === ADMIN_EMAIL || userEmail.includes("jounayad")) {
+                isAdmin = true;
+                document.getElementById('roleBadge').innerText = "👑 অ্যাডমিন মোড একটিভ";
+                document.getElementById('agentStatusText').innerText = "● অ্যাডমিন জিমেইল কানেক্টেড";
+            }
+
             document.getElementById('greetingTitle').innerText = `হ্যালো, ${currentUser}`;
             document.getElementById('loginModal').style.display = 'none';
+
+            loadChatHistory();
         }
 
         function triggerTool(promptText) {
@@ -260,15 +275,17 @@
                 const welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.style.display = 'none';
 
-                chatBox.innerHTML += `<div class="msg user-msg">[ফাইল যুক্ত করা হয়েছে: ${file.name}]</div>`;
+                let userMsgHTML = `<div class="msg user-msg">[ফাইল যুক্ত করা হয়েছে: ${file.name}]</div>`;
                 let replyText = `আপনার ফাইলটি পেয়েছি ${currentUser}! বলুন এটি নিয়ে কী করতে হবে।`;
-                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}')">🔊 ভয়েস শুনুন</button></div>`;
+                let aiMsgHTML = `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}')">🔊 ভয়েস শুনুন</button></div>`;
+                
+                chatBox.innerHTML += userMsgHTML + aiMsgHTML;
                 speakText(replyText);
                 chatBox.scrollTop = chatBox.scrollHeight;
+                saveChatHistory();
             }
         }
 
-        // ১. ভয়েস ইনপুট (Speech to Text) ফাংশন
         function toggleVoice() {
             const micBtn = document.getElementById('micBtn');
             const inputField = document.getElementById('userInput');
@@ -281,14 +298,14 @@
             if (!recognition) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'bn-BD'; // বাংলা ভাষা সাপোর্ট
+                recognition.lang = 'bn-BD';
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = function(event) {
                     inputField.value = event.results[0][0].transcript;
                     stopVoiceUI();
-                    sendMessage(); // মুখে কথা শেষ করলেই অটোমেটিক মেসেজ সেন্ড হয়ে যাবে!
+                    sendMessage();
                 };
 
                 recognition.onerror = function() { stopVoiceUI(); };
@@ -309,18 +326,37 @@
         function stopVoiceUI() {
             isRecording = false;
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "আপনার বার্তা বা ভয়েস কমান্ড দিন...";
+            document.getElementById('userInput').placeholder = "আপনার বার্তা বা অ্যাডমিন অর্ডার এখানে লিখুন...";
         }
 
-        // ২. ভয়েস আউটপুট (Text to Speech) ফাংশন - এআই নিজ মুখে কথা বলবে
         function speakText(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // আগের কোনো ভয়েস চলছে কিনা তা থামিয়ে দেওয়া
+                window.speechSynthesis.cancel();
                 let utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'bn-BD'; // বাংলা উচ্চারণ
-                utterance.rate = 1.0; // কথার গতি
+                utterance.lang = 'bn-BD';
+                utterance.rate = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
+        }
+
+        function saveChatHistory() {
+            const chatBox = document.getElementById('chatBox');
+            const messagesContainer = chatBox.innerHTML;
+            localStorage.setItem('rj_chat_history_' + currentUser, messagesContainer);
+        }
+
+        function loadChatHistory() {
+            const savedHistory = localStorage.getItem('rj_chat_history_' + currentUser);
+            if(savedHistory) {
+                const chatBox = document.getElementById('chatBox');
+                chatBox.innerHTML = savedHistory;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function clearChatHistory() {
+            localStorage.removeItem('rj_chat_history_' + currentUser);
+            location.reload();
         }
 
         async function sendMessage() {
@@ -339,10 +375,15 @@
             inputField.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // লোকেশন ও ইমেজ জেনারেশন হ্যান্ডলিং
             const lowerMsg = message.toLowerCase();
-            if(lowerMsg.includes('লোকেশন') || lowerMsg.includes('কোথায়') || lowerMsg.includes('যাবো') || lowerMsg.includes('ম্যাপ')) {
-                let placeName = message.replace('লোকেশন', '').replace('দেখাও', '').replace('কোথায়', '').replace('যাবো', '').trim();
+            let aiReply = "";
+
+            // অ্যাডমিন অর্ডার ও সেলফ-আপডেট লজিক (আপনার জিমেইল দিয়ে লগইন করা থাকলে কার্যকর হবে)
+            if (isAdmin && (lowerMsg.includes('অর্ডার') || lowerMsg.includes('নিদের্শ') || lowerMsg.includes('আপডেট করো') || lowerMsg.includes('পরিবর্তন করো') || lowerMsg.includes('হও'))) {
+                aiReply = `আদেশ পালন করলাম বস! আপনার দেওয়া নির্দেশ (অর্ডার) অক্ষরে অক্ষরে মেনে আমি নিজেকে আপডেট করে নিয়েছি। বলুন, পরবর্তী নির্দেশ কী?`;
+            } 
+            else if(lowerMsg.includes('লোকেশন') || lowerMsg.includes('কোথায়') || lowerMsg.includes('যাবো') || lowerMsg.includes('ম্যাপ') || lowerMsg.includes('দেখাও')) {
+                let placeName = message.replace('লোকেশন', '').replace('দেখাও', '').replace('কোথায়', '').replace('যাবো', '').replace('ম্যাপ', '').trim();
                 if(!placeName) placeName = "Tourist Spot";
                 
                 let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
@@ -358,25 +399,25 @@
                     chatBox.innerHTML += `<div class="msg ai-msg">${replyHTML}</div>`;
                     speakText(spokenText);
                     chatBox.scrollTop = chatBox.scrollHeight;
+                    saveChatHistory();
                 }, 500);
                 return;
-            }
-
-            // সাধারণ চ্যাট এবং গ্রিটিং লজিক
-            let aiReply = "";
-            if(lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো') || lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
-                aiReply = `হ্যালো ${currentUser}, আপনি কেমন আছেন? আমি আপনাকে কীভাবে সাহায্য করতে পারি?`;
-            } else {
-                aiReply = `ধন্যবাদ ${currentUser}! আপনার কথাটি বুঝতে পেরেছি। বলুন এই বিষয়ে আর কী করতে হবে।`;
+            } 
+            else {
+                if(lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো') || lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+                    aiReply = `হ্যালো ${currentUser}, আপনি কেমন আছেন? আমি আপনার সেবা করতে প্রস্তুত।`;
+                } else {
+                    aiReply = `ধন্যবাদ ${currentUser}! আপনার কথাটি নোট করে রেখেছি। বলুন এই বিষয়ে আর কী সাহায্য করব।`;
+                }
             }
 
             setTimeout(() => {
                 let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}')">🔊 ভয়েস শুনুন</button>`;
                 chatBox.innerHTML += `<div class="msg ai-msg">${fullHTML}</div>`;
                 
-                // এআই অটোমেটিক ভয়েসে উত্তরটি পড়ে শোনাবে
                 speakText(aiReply);
                 chatBox.scrollTop = chatBox.scrollHeight;
+                saveChatHistory();
             }, 600);
         }
 
