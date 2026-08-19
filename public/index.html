@@ -34,6 +34,7 @@
             width: 100%; padding: 14px 18px; background: #1a2234; border: 1px solid var(--border);
             border-radius: 12px; color: #fff; margin-bottom: 16px; outline: none; font-size: 1rem;
         }
+        .login-box input:focus { border-color: var(--primary); }
         .login-box button {
             width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none;
             border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s;
@@ -165,12 +166,13 @@
 </head>
 <body>
 
+    <!-- সিক্যুরড লগইন মডাল (ফাঁকা ইনপুট ফিল্ড সহ) -->
     <div id="loginModal">
         <div class="login-box">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
             <h1>RJ MPBS AI</h1>
             <p>Please enter your Gmail to access the studio</p>
-            <input type="text" id="userNameInput" placeholder="Enter Gmail (e.g., jounayada@gmail.com)">
+            <input type="email" id="userNameInput" placeholder="Enter your Gmail address..." autocomplete="off">
             <button onclick="loginUser()">Get Started</button>
         </div>
     </div>
@@ -183,7 +185,7 @@
                 RJ MPBS AI - Studio
             </div>
         </div>
-        <div class="free-badge" id="roleBadge">✨ Live AI Assistant</div>
+        <div class="free-badge" id="roleBadge">✨ Visitor Mode</div>
     </header>
 
     <div class="main-workspace">
@@ -193,7 +195,7 @@
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" id="aiAvatar" alt="AI Agent">
                 </div>
                 <div class="agent-title">RJ Live Expert</div>
-                <div class="agent-sub" id="agentStatusText">● Active & Ready</div>
+                <div class="agent-sub" id="agentStatusText">● Ready</div>
             </div>
 
             <div class="tool-category">
@@ -237,13 +239,42 @@
     </div>
 
     <script>
-        let currentUser = "User";
+        let currentUser = "Visitor";
         let userEmail = "";
         let isAdmin = false;
         let recognition = null;
         let isRecording = false;
 
         const ADMIN_EMAIL = "jounayada@gmail.com";
+
+        function loginUser() {
+            let emailInput = document.getElementById('userNameInput').value.trim().toLowerCase();
+            
+            if(!emailInput || !emailInput.includes('@')) {
+                alert('Please enter a valid Gmail address.');
+                return;
+            }
+            
+            userEmail = emailInput;
+            let cleanName = userEmail.split('@')[0];
+            currentUser = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+            
+            // শুধুমাত্র আপনার ইমেইল হলে তবেই অ্যাডমিন মোড অন হবে
+            if(userEmail === ADMIN_EMAIL) {
+                isAdmin = true;
+                document.getElementById('roleBadge').innerText = "👑 Admin Mode Active";
+                document.getElementById('agentStatusText').innerText = "● Admin Connected";
+            } else {
+                isAdmin = false;
+                document.getElementById('roleBadge').innerText = `✨ ${currentUser}`;
+                document.getElementById('agentStatusText').innerText = "● User Connected";
+            }
+
+            document.getElementById('greetingTitle').innerText = `Hello, ${currentUser}`;
+            document.getElementById('loginModal').style.display = 'none';
+
+            loadChatHistory();
+        }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebarPanel');
@@ -273,32 +304,6 @@
             if (/[\u0980-\u09FF]/.test(text)) return { code: 'bn-BD', name: 'Bengali' };
             if (/[\u0600-\u06FF]/.test(text)) return { code: 'ar-SA', name: 'Arabic' };
             return { code: 'en-US', name: 'English' };
-        }
-
-        function loginUser() {
-            let emailInput = document.getElementById('userNameInput').value.trim().toLowerCase();
-            if(!emailInput) {
-                alert('Please enter your Gmail address.');
-                return;
-            }
-            
-            userEmail = emailInput;
-            let cleanName = userEmail;
-            if(userEmail.includes('@')) {
-                cleanName = userEmail.split('@')[0];
-            }
-            currentUser = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-            
-            if(userEmail === ADMIN_EMAIL || userEmail.includes("jounayad")) {
-                isAdmin = true;
-                document.getElementById('roleBadge').innerText = "👑 Admin Mode Active";
-                document.getElementById('agentStatusText').innerText = "● Admin Connected";
-            }
-
-            document.getElementById('greetingTitle').innerText = `Hello, ${currentUser}`;
-            document.getElementById('loginModal').style.display = 'none';
-
-            loadChatHistory();
         }
 
         function triggerTool(promptText) {
@@ -349,7 +354,7 @@
             if (!recognition) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'bn-BD'; // ভয়েস রিকগনিশন বাংলা ও ইংরেজি উভয় দেশের জন্য অটো এডজাস্ট হবে
+                recognition.lang = 'bn-BD';
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
@@ -380,17 +385,14 @@
             document.getElementById('userInput').placeholder = "Type your message or admin order here...";
         }
 
-        // সঠিক উচ্চারণ এবং ভাষা সেট করার জন্য উন্নত স্পিচ সিন্থেসিস ফাংশন
         function speakText(text, langCode) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                
-                // ইমোজি বা বিশেষ কারাক্টার বাদ দিয়ে শুধু পরিষ্কার টেক্সট ভয়েসে রিড করার জন্য প্রসেস করা হলো
                 let cleanTextForSpeech = text.replace(/[🏛️📰🗓️👑👋📍✨📷🗑️]/g, '').trim();
                 let utterance = new SpeechSynthesisUtterance(cleanTextForSpeech);
                 
                 utterance.lang = langCode || 'bn-BD';
-                utterance.rate = 0.95; // কথার গতি স্বাভাবিক রাখার জন্য
+                utterance.rate = 0.95;
                 utterance.pitch = 1.0;
                 
                 const avatar = document.getElementById('aiAvatar');
@@ -449,37 +451,31 @@
             let aiReply = "";
             let voiceLabel = lang.code === 'bn-BD' ? "ভয়েস শুনুন" : "Listen Voice";
 
-            // ১. ধর্ম পরিচয় চেক
             if (lowerMsg.includes('religion') || lowerMsg.includes('धर्म') || lowerMsg.includes('ধর্ম কি') || lowerMsg.includes('কোন ধর্ম')) {
                 aiReply = lang.code === 'bn-BD' ? 
                     `আলহামদুলিল্লাহ, আমি একজন মুসলিম এআই সহকারী। আমার নির্মাতা জোনায়েদ আহমেদ একজন মুসলিম ডেভেলপার।` : 
                     `Alhamdulillah, I am a Muslim AI assistant. My creator Jounayad Ahmed is a Muslim developer.`;
             }
-            // ২. সুনির্দিষ্ট সালাম চেক (শুধুমাত্র সালাম লিখলে তবেই ওয়ালাইকুমুস সালাম দিবে)
             else if (lowerMsg.includes('assalamu') || lowerMsg.includes('salam') || lowerMsg.includes('সালাম')) {
                 aiReply = lang.code === 'bn-BD' ? 
-                    `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! হ্যালো ${currentUser}, বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?` : 
+                    `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! হ্যালো ${currentUser}, বলুন আজ কীভাবে সাহায্য করতে পারি?` : 
                     `Wa Alaikum Assalam wa Rahmatullah! Hello ${currentUser}, how can I help you today?`;
             }
-            // ৩. সাধারণ হাই/হ্যালো চেক (শুধুমাত্র হ্যালো বা হাই লিখলে সালাম না দিয়ে প্রফেশনাল গ্রিটিং জানাবে)
             else if (lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই') || lowerMsg.includes('হ্যাল্লো')) {
                 aiReply = lang.code === 'bn-BD' ? 
-                    `হ্যালো ${currentUser}! আমি আপনার এআই সহকারী। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?` : 
+                    `হ্যালো ${currentUser}! আমি আপনার এআই সহকারী। বলুন আজ কীভাবে সাহায্য করতে পারি?` : 
                     `Hello ${currentUser}! I am your AI assistant. How can I help you today?`;
             }
-            // ৪. অ্যাডমিন কমান্ড ও আপডেট
             else if (isAdmin && (lowerMsg.includes('order') || lowerMsg.includes('update') || lowerMsg.includes('change') || lowerMsg.includes('command') || lowerMsg.includes('আপডেট') || lowerMsg.includes('অর্ডার'))) {
                 aiReply = lang.code === 'bn-BD' ? 
                     `আদেশ পালন করলাম বস! অ্যাডমিন ${currentUser} হিসেবে সিস্টেম সফলভাবে আপডেট করা হয়েছে।` : 
                     `Command accepted, Boss! As admin ${currentUser}, system updated successfully.`;
             } 
-            // ৫. পিরামিড ও ইতিহাস সম্পর্কিত তথ্য
             else if (lowerMsg.includes('pyramid') || lowerMsg.includes('পিরামিড') || lowerMsg.includes('ইতিহাস') || lowerMsg.includes('history') || lowerMsg.includes('pharaoh')) {
                 aiReply = lang.code === 'bn-BD' ? 
                     `পিরামিডের ইতিহাস: মিশরের পিরামিডগুলো মূলত প্রাচীন ফেরাউন ও তাদের রাজপরিবারের মৃতদেহ সংরক্ষণের জন্য রাজকীয় সমাধি হিসেবে তৈরি করা হয়েছিল। গিজার মহা পিরামিড খ্রিস্টপূর্ব ২৫০০ অব্দ নাগাদ ফারাও খুফুর শাসনামলে নির্মিত হয়।` : 
                     `Pyramid History: The pyramids of Egypt were built as monumental royal tombs for ancient Pharaohs. The Great Pyramid of Giza was built around 2500 BCE during the reign of Pharaoh Khufu.`;
             }
-            // ৬. বিশ্বের সকল দেশের লাইভ খবরাখবর ও ফাইল আর্কাইভ সিস্টেম
             else if (lowerMsg.includes('news') || lowerMsg.includes('খবর') || lowerMsg.includes('ঘটনা') || lowerMsg.includes('update') || lowerMsg.includes('আপডেট') || lowerMsg.includes('কালকে') || lowerMsg.includes('গতকাল') || lowerMsg.includes('আজকের')) {
                 let archive = getDailyNewsArchive();
                 let todayDate = new Date().toISOString().split('T')[0];
@@ -493,15 +489,14 @@
                     aiReply = `Global Live News and Daily Archive Files. Today's File (${todayDate}): ${archive[todayDate]}. Yesterday's File (${yesterdayDate}): ${archive[yesterdayDate]}.`;
                 }
             }
-            // ৭. লোকেশন ও ম্যাপ ফিচার
             else if(lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('map') || lowerMsg.includes('show') || lowerMsg.includes('লোকেশন') || lowerMsg.includes('ম্যাপ')) {
                 let placeName = message.replace('location', '').replace('show', '').replace('where', '').replace('map', '').replace('লোকেশন', '').replace('ম্যাপ', '').replace('দেখাও', '').trim();
-                if(!placeName) placeName = "Tourist Spot";
+                if(!placeName) placeName = "Tourist Spot;
                 
                 let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
                 let imageUrl = `https://pollinations.ai/p/${encodeURIComponent(placeName + ' scenic view realistic photography')}?width=500&height=300&nologo=true`;
 
-                aiReply = lang.code === 'bn-BD' ? `লোকেশন: ${placeName} এর ম্যাপ এবং ছবি নিচে দেওয়া হলো।` : `Here is the location and view for ${placeName}.`;
+                aiReply = lang.code === 'bn-BD' ? `লোকেশন: ${placeName} এর ম্যাপ এবং ছবি নিচে দেওয়া হলো।` : `Here is.`;
                 let mapBtnText = lang.code === 'bn-BD' ? "📍 গুগল ম্যাপে দেখুন" : "📍 View on Google Maps";
 
                 let replyHTML = `${escapeHtml(aiReply)}<br>
@@ -517,7 +512,6 @@
                 }, 500);
                 return;
             } 
-            // ৮. সাধারণ ডিফল্ট উত্তর
             else {
                 aiReply = lang.code === 'bn-BD' ? 
                     `ধন্যবাদ ${currentUser}! আপনার কথা বুঝতে পেরেছি। বিশ্বের যেকোনো দেশের লাইভ নিউজ ফাইল, ইতিহাস বা লোকেশন সম্পর্কে জানতে আমাকে জিজ্ঞেস করতে পারেন।` : 
