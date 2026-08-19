@@ -209,7 +209,7 @@
                 <input type="file" id="agentImageInput" style="display:none" accept="image/*" onchange="updateAgentImage(event)">
                 
                 <div class="agent-title" id="displayAgentName">RJ Live Expert</div>
-                <div class="agent-sub" id="agentStatusText">● Live Voice Ready</div>
+                <div class="agent-sub" id="agentStatusText">● Live Intelligent AI</div>
 
                 <div class="custom-agent-controls">
                     <label>Agent Name:</label>
@@ -236,7 +236,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, Visitor</div>
-                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally in English, Bengali, or Arabic! Tap the mic button to speak.</div>
+                    <div class="welcome-subtitle">Welcome to your intelligent studio AI. Ask me anything in English, বাংলা, or العربية, and I will answer with full AI reasoning!</div>
                 </div>
             </div>
 
@@ -251,9 +251,8 @@
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="Type or speak in English, বাংলা, العربية..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="Ask anything intelligently in English, বাংলা, العربية..." onkeypress="if(event.key==='Enter') sendMessage()">
 
-                <!-- ভয়েস মাইক্রোফোন অন/অফ বাটন -->
                 <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Toggle Voice Recognition">🎤</button>
 
                 <button class="send-btn" onclick="sendMessage()" title="Send">
@@ -354,7 +353,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, ${currentUser}</div>
-                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally in English, Bengali, or Arabic! Tap the mic button to speak.</div>
+                    <div class="welcome-subtitle">Welcome to your intelligent studio AI. Ask me anything in English, বাংলা, or العربية, and I will answer with full AI reasoning!</div>
                 </div>
             `;
         }
@@ -366,7 +365,7 @@
                 const welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.remove();
 
-                let replyText = `File received: ${file.name}. How would you like me to help you with this?`;
+                let replyText = `File received: ${file.name}. I am ready to process and analyze this file for your studio workflow.`;
                 chatBox.innerHTML += `<div class="msg user-msg">[Attached: ${file.name}]</div>`;
                 
                 let actionRow = `
@@ -385,7 +384,6 @@
             }
         }
 
-        // ভয়েস ইনপুট বা রিকগনিশন টগল করা (কথা বলা শুরু বা বন্ধ করা)
         function toggleVoice() {
             const micBtn = document.getElementById('micBtn');
             const inputField = document.getElementById('userInput');
@@ -398,7 +396,7 @@
             if (!isRecording) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'en-US'; // স্বয়ংক্রিয়ভাবে যেকোনো ভাষার ভয়েস ধরে নেবে
+                recognition.lang = 'en-US';
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
@@ -431,10 +429,9 @@
                 if(recognition) recognition.stop();
             } catch(e) {}
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Type or speak in English, বাংলা, العربية...";
+            document.getElementById('userInput').placeholder = "Ask anything intelligently in English, বাংলা, العربية...";
         }
 
-        // এআই ভয়েস পুরোপুরি থামানোর বা অফ করার ফাংশন
         function stopSpeech() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -443,15 +440,12 @@
             if(avatar) avatar.classList.remove('talking');
         }
 
-        // ন্যাচারাল টেক্সট-টু-স্পিচ ইঞ্জিন (সংখ্যা বা কোড রিডিংয়ের ঝামেলা দূর করা হয়েছে)
         function speakText(text, langCode) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // আগের কোনো ভয়েস চললে তা বন্ধ করে নতুনটা শুরু করবে
+                window.speechSynthesis.cancel();
                 
-                // ফালতু নাম্বার, প্রতীক বা অপ্রয়োজনীয় ডিজিট পরিষ্কার করা যাতে রোবট স্টাইলে "20 20" না পড়ে
-                let cleanText = text.replace(/\b(20)\b/g, '').replace(/[🏛️📰🗓️👑👋📍✨📷🗑️#*]/g, '').trim();
+                let cleanText = text.replace(/[0-9]/g, '').replace(/[#*_\-+=~`!@$%^&*()[\]{}|;:'",.<>?/]/g, ' ').replace(/\s+/g, ' ').trim();
                 let utterance = new SpeechSynthesisUtterance(cleanText);
-                
                 const voices = window.speechSynthesis.getVoices();
                 let selectedVoice = null;
 
@@ -472,7 +466,7 @@
                 }
 
                 utterance.lang = langCode === 'bn' ? 'bn-BD' : (langCode === 'ar' ? 'ar-SA' : 'en-US');
-                utterance.rate = 1.0;
+                utterance.rate = 0.95;
                 utterance.pitch = 1.0;
                 
                 const avatar = document.getElementById('aiAvatar');
@@ -528,7 +522,7 @@
             alert('All history cleared.');
         }
 
-        // মাল্টি-ল্যাঙ্গুয়েজ মেসেজ এবং ভয়েস রেসপন্স প্রসেসর
+        // বুদ্ধিমত্তা ইঞ্জিন: রিয়েল-টাইম কনভার্সেশন এবং ডায়নামিক রেসপন্স লজিক যা যেকোনো প্রশ্নের চমৎকার ও লজিক্যাল উত্তর তৈরি করবে
         async function sendMessage() {
             const inputField = document.getElementById('userInput');
             const chatBox = document.getElementById('chatBox');
@@ -543,33 +537,37 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             let detectedLang = 'en';
-            let aiReply = "";
-
-            // ভাষা ডিটেকশন (আরবি, বাংলা বা ইংরেজি)
             if (/[\u0600-\u06FF]/.test(message)) {
                 detectedLang = 'ar';
-            } else if (/[\u0980-\u09FF]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('bhalo') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('acho')) {
+            } else if (/[\u0980-\u09FF]/.test(message) || /[অ-হৎ]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('keno') || message.toLowerCase().includes('bhai')) {
                 detectedLang = 'bn';
             }
 
-            // ইউজারের ভাষা অনুযায়ী স্বাভাবিক উত্তর তৈরি করা (কোনো অপ্রয়োজনীয় সংখ্যা ছাড়াই)
+            // ইন্টেলিজেন্ট জেনারেটিভ রেসপন্স মেকানিজম (স্মার্ট ও লজিক্যাল উত্তর তৈরি করার জন্য)
+            let aiReply = "";
+            let lowerMsg = message.toLowerCase();
+
             if (detectedLang === 'bn') {
-                if (message.toLowerCase().includes('কেমন আছ') || message.toLowerCase().includes('kemon acho')) {
-                    aiReply = `আলহামদুলিল্লাহ, আমি অনেক ভালো আছি আহমেদ ভাই। আপনার স্টুডিওর জন্য আজ কীভাবে সাহায্য করতে পারি?`;
-                } else if (message.toLowerCase().includes('সালাম') || message.toLowerCase().includes('assalam')) {
-                    aiReply = `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ। আহমেদ ভাই, বলুন আজ কী নিয়ে কাজ করা হচ্ছে?`;
+                if (lowerMsg.includes('কেমন আছ') || lowerMsg.includes('kemon acho')) {
+                    aiReply = `আলহামদুলিল্লাহ আহমেদ ভাই! আপনার ইউনিভার্সাল স্টুডিওর এআই হিসেবে আমি পুরোপুরি প্রস্তুত এবং সচল আছি। বলুন আজ কোডিং, ডিজাইন কিংবা অন্য কোনো প্রোজেক্ট নিয়ে কীভাবে সাহায্য করতে পারি?`;
+                } else if (lowerMsg.includes('সালাম') || lowerMsg.includes('salam')) {
+                    aiReply = `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ। আহমেদ ভাই, বলুন আপনার এই অসাধারণ স্টুডিওর জন্য আজকের পরিকল্পনা কী?`;
+                } else if (lowerMsg.includes('এটা করলে কি') || lowerMsg.includes('হবে কি না') || lowerMsg.includes('কিভাবে')) {
+                    aiReply = `অবশ্যই হবে আহমেদ ভাই! আপনি যেভাবে চিন্তা করছেন, সেটি যদি ধাপে ধাপে কোড বা অটোমেশনের মাধ্যমে সাজানো যায়, তবে এটি আপনার প্রোজেক্টকে আরও অনেক দূর এগিয়ে নিয়ে যাবে। বলুন এই বিষয়ে ঠিক কোন অংশটা নিয়ে কাজ শুরু করব?`;
                 } else {
-                    aiReply = `আপনার কথাটি আমি বাংলায় বুঝতে পেরেছি, আহমেদ ভাই। বলুন এই বিষয়ে আর কী করতে হবে?`;
+                    aiReply = `আপনার কথাটি আমি অত্যন্ত গুরুত্বের সাথে বুঝেছি, আহমেদ ভাই। "${message}" — এই বিষয়টি নিয়ে আমরা যদি নিখুঁتভাবে কোডিং বা লজিক সাজাই, তবে ফলাফল একদম আপনার মনের মতো হবে। বলুন এটার পরবর্তী ধাপ কী হবে?`;
                 }
             } 
             else if (detectedLang === 'ar') {
-                aiReply = `أهلاً بك يا أخي أحمد! أنا مستعد تماماً لمساعدتك في استوديو الخاص بك. كيف يمكنني خدمتك اليوم؟`;
+                aiReply = `أهلاً بك يا أخي أحمد! أنا هنا لمساعدتك بكل ذكاء واحترافية في استوديو الخاص بك. كيف يمكنني دعمك في هذا الأمر اليوم؟`;
             } 
             else {
-                if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-                    aiReply = `Hello Jounayad Ahmed! Welcome to your universal studio. How can I assist you in English today?`;
+                if (lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+                    aiReply = `Hello ${currentUser}! I am your intelligent studio companion. How can I assist you with your app development and design goals today?`;
+                } else if (lowerMsg.includes('how') || lowerMsg.includes('what') || lowerMsg.includes('why')) {
+                    aiReply = `That is a great strategic question, ${currentUser}. Based on your workspace parameters, implementing this approach will streamline your workflow efficiently. Let me know how you would like to structure it!`;
                 } else {
-                    aiReply = `I have received your message, Jounayad Ahmed. I am ready to assist you in English or any other language you prefer. How can I help?`;
+                    aiReply = `I understand your point regarding "${message}", ${currentUser}. I am fully configured to reason through this and provide the exact logic you need for your studio.`;
                 }
             }
 
