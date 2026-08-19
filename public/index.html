@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RJ MPBS AI - Universal Studio</title>
+    <title>RJ MPBS AI - Studio</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -118,8 +118,12 @@
         .user-msg { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
         .ai-msg { background: #1a2234; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
         
-        .speak-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.85rem; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
-        .speak-btn:hover { text-decoration: underline; }
+        .voice-action-row { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+        .speak-btn { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; transition: 0.2s; }
+        .speak-btn:hover { background: var(--accent); color: #fff; }
+        
+        .stop-speech-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; transition: 0.2s; }
+        .stop-speech-btn:hover { background: var(--danger); color: #fff; }
 
         .input-bar-area { padding: 15px 20px; background: #0b0f19; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; position: relative; }
         
@@ -131,7 +135,6 @@
         }
         .plus-btn:hover { background: var(--primary); border-color: var(--primary); }
 
-        /* পপ-আপ মেনু ওপরের দিকে ওপেন হওয়ার কোড */
         .plus-menu {
             display: none; position: absolute; bottom: 65px; left: 0; background: var(--card);
             border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 -15px 30px rgba(0,0,0,0.6);
@@ -233,7 +236,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, Visitor</div>
-                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally in any language (English, Bengali, Arabic, etc.)! Click top-left ☰ to access history or customize your agent.</div>
+                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally in English, Bengali, or Arabic! Tap the mic button to speak.</div>
                 </div>
             </div>
 
@@ -248,10 +251,10 @@
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="Type or speak in any language (English, বাংলা, العربية)..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="Type or speak in English, বাংলা, العربية..." onkeypress="if(event.key==='Enter') sendMessage()">
 
-                <!-- ভয়েস টগল বাটন: অন করলে বিশ্বজুড়ে যেকোনো ভাষায় কথা শুনতে ও বলতে প্রস্তুত থাকবে -->
-                <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Toggle Universal Voice Mode">🎤</button>
+                <!-- ভয়েস মাইক্রোফোন অন/অফ বাটন -->
+                <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Toggle Voice Recognition">🎤</button>
 
                 <button class="send-btn" onclick="sendMessage()" title="Send">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -343,12 +346,15 @@
         }
 
         function startNewChat() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
             const chatBox = document.getElementById('chatBox');
             chatBox.innerHTML = `
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, ${currentUser}</div>
-                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally in any language (English, Bengali, Arabic, etc.)! Click top-left ☰ to access history or customize your agent.</div>
+                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally in English, Bengali, or Arabic! Tap the mic button to speak.</div>
                 </div>
             `;
         }
@@ -360,16 +366,26 @@
                 const welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.remove();
 
-                let replyText = `File received successfully: ${file.name}. How would you like me to process this?`;
-                chatBox.innerHTML += `<div class="msg user-msg">[Attached file: ${file.name}]</div>`;
-                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}', 'en')">🔊 Listen</button></div>`;
+                let replyText = `File received: ${file.name}. How would you like me to help you with this?`;
+                chatBox.innerHTML += `<div class="msg user-msg">[Attached: ${file.name}]</div>`;
+                
+                let actionRow = `
+                    <div class="msg ai-msg">
+                        ${escapeHtml(replyText)}
+                        <div class="voice-action-row">
+                            <button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}', 'en')">🔊 Play Voice</button>
+                            <button class="stop-speech-btn" onclick="stopSpeech()">⏹ Stop Voice</button>
+                        </div>
+                    </div>
+                `;
+                chatBox.innerHTML += actionRow;
                 speakText(replyText, 'en');
                 chatBox.scrollTop = chatBox.scrollHeight;
                 saveCurrentSession(file.name);
             }
         }
 
-        // ইউনিভার্সাল ভয়েস রেকগনিশন: ইউজার যেকোনো ভাষায় কথা বললে তা স্বয়ংক্রিয়ভাবে ডিটেক্ট করে ইনপুট নেবে
+        // ভয়েস ইনপুট বা রিকগনিশন টগল করা (কথা বলা শুরু বা বন্ধ করা)
         function toggleVoice() {
             const micBtn = document.getElementById('micBtn');
             const inputField = document.getElementById('userInput');
@@ -379,56 +395,61 @@
                 return;
             }
 
-            if (!recognition) {
+            if (!isRecording) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'en-US'; // ডিফল্ট গ্লোবাল ল্যাঙ্গুয়েজ ইংলিশ রাখা হয়েছে, তবে ব্রাউজার স্বয়ংক্রিয়ভাবে ইউজারের ভাষা ধরে নেবে
+                recognition.lang = 'en-US'; // স্বয়ংক্রিয়ভাবে যেকোনো ভাষার ভয়েস ধরে নেবে
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = function(event) {
                     let spokenText = event.results[0][0].transcript;
                     inputField.value = spokenText;
-                    stopVoiceUI();
+                    stopVoiceRecording();
                     sendMessage();
                 };
-                recognition.onerror = function() { stopVoiceUI(); };
-                recognition.onend = function() { stopVoiceUI(); };
-            }
+                
+                recognition.onerror = function() { stopVoiceRecording(); };
+                recognition.onend = function() { stopVoiceRecording(); };
 
-            if (!isRecording) {
                 try {
                     recognition.start();
                     isRecording = true;
                     micBtn.classList.add('recording');
-                    inputField.placeholder = "Listening in any language... (Tap mic again to stop)";
+                    inputField.placeholder = "Listening... Speak now (Tap mic to stop)";
                 } catch(e) {
-                    stopVoiceUI();
+                    stopVoiceRecording();
                 }
             } else {
-                stopVoiceUI();
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                }
-                const avatar = document.getElementById('aiAvatar');
-                if(avatar) avatar.classList.remove('talking');
+                stopVoiceRecording();
             }
         }
 
-        function stopVoiceUI() {
+        function stopVoiceRecording() {
             isRecording = false;
             try {
                 if(recognition) recognition.stop();
             } catch(e) {}
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Type or speak in any language (English, বাংলা, العربية)...";
+            document.getElementById('userInput').placeholder = "Type or speak in English, বাংলা, العربية...";
         }
 
-        // ইউনিভার্সাল টেক্সট-টু-স্পিচ ইঞ্জিন: ভাষা অনুযায়ী সঠিক উচ্চারণে ভয়েস আউটপুট দেবে
-        function speakText(text, langCode) {
+        // এআই ভয়েস পুরোপুরি থামানোর বা অফ করার ফাংশন
+        function stopSpeech() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                let cleanText = text.replace(/[🏛️📰🗓️👑👋📍✨📷🗑️%]/g, '').trim();
+            }
+            const avatar = document.getElementById('aiAvatar');
+            if(avatar) avatar.classList.remove('talking');
+        }
+
+        // ন্যাচারাল টেক্সট-টু-স্পিচ ইঞ্জিন (সংখ্যা বা কোড রিডিংয়ের ঝামেলা দূর করা হয়েছে)
+        function speakText(text, langCode) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // আগের কোনো ভয়েস চললে তা বন্ধ করে নতুনটা শুরু করবে
+                
+                // ফালতু নাম্বার, প্রতীক বা অপ্রয়োজনীয় ডিজিট পরিষ্কার করা যাতে রোবট স্টাইলে "20 20" না পড়ে
+                let cleanText = text.replace(/\b(20)\b/g, '').replace(/[🏛️📰🗓️👑👋📍✨📷🗑️#*]/g, '').trim();
                 let utterance = new SpeechSynthesisUtterance(cleanText);
                 
                 const voices = window.speechSynthesis.getVoices();
@@ -507,7 +528,7 @@
             alert('All history cleared.');
         }
 
-        // স্মার্ট মাল্টি-ল্যাঙ্গুয়েজ মেসেজ এবং ভয়েস রেসপন্স প্রসেসর
+        // মাল্টি-ল্যাঙ্গুয়েজ মেসেজ এবং ভয়েস রেসপন্স প্রসেসর
         async function sendMessage() {
             const inputField = document.getElementById('userInput');
             const chatBox = document.getElementById('chatBox');
@@ -524,40 +545,48 @@
             let detectedLang = 'en';
             let aiReply = "";
 
-            // আরবি ভাষা ডিটেকশন
+            // ভাষা ডিটেকশন (আরবি, বাংলা বা ইংরেজি)
             if (/[\u0600-\u06FF]/.test(message)) {
                 detectedLang = 'ar';
-            } 
-            // বাংলা ভাষা বা বাংলা লিপি ডিটেকশন
-            else if (/[\u0980-\u09FF]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('bhalo') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('acho')) {
+            } else if (/[\u0980-\u09FF]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('bhalo') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('acho')) {
                 detectedLang = 'bn';
             }
 
-            // ইউজারের ভাষা অনুযায়ী হুবহু সেই ভাষায় টেক্সট ও ভয়েস উত্তর প্রস্তুত করা
+            // ইউজারের ভাষা অনুযায়ী স্বাভাবিক উত্তর তৈরি করা (কোনো অপ্রয়োজনীয় সংখ্যা ছাড়াই)
             if (detectedLang === 'bn') {
                 if (message.toLowerCase().includes('কেমন আছ') || message.toLowerCase().includes('kemon acho')) {
-                    aiReply = `আলহামদুলিল্লাহ, আমি অনেক ভালো আছি আহমেদ ভাই! বলুন আপনার স্টুডিওর জন্য আজ কীভাবে সাহায্য করতে পারি?`;
+                    aiReply = `আলহামদুলিল্লাহ, আমি অনেক ভালো আছি আহমেদ ভাই। আপনার স্টুডিওর জন্য আজ কীভাবে সাহায্য করতে পারি?`;
                 } else if (message.toLowerCase().includes('সালাম') || message.toLowerCase().includes('assalam')) {
-                    aiReply = `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! আহমেদ ভাই, বলুন আজ কী নিয়ে কাজ করা হচ্ছে?`;
+                    aiReply = `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ। আহমেদ ভাই, বলুন আজ কী নিয়ে কাজ করা হচ্ছে?`;
                 } else {
                     aiReply = `আপনার কথাটি আমি বাংলায় বুঝতে পেরেছি, আহমেদ ভাই। বলুন এই বিষয়ে আর কী করতে হবে?`;
                 }
             } 
             else if (detectedLang === 'ar') {
-                aiReply = `أهلاً بك يا أخي أحمد! أنا مستعد تماماً لمساعدتك في استوديو الخاص بك بأي لغة تحتاجها. كيف يمكنني خدمتك اليوم؟`;
+                aiReply = `أهلاً بك يا أخي أحمد! أنا مستعد تماماً لمساعدتك في استوديو الخاص بك. كيف يمكنني خدمتك اليوم؟`;
             } 
             else {
                 if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-                    aiReply = `Hello Jounayad Ahmed! Welcome to your universal studio AI. How can I assist you in English today?`;
+                    aiReply = `Hello Jounayad Ahmed! Welcome to your universal studio. How can I assist you in English today?`;
                 } else {
-                    aiReply = `I have received your message, Jounayad Ahmed. I am ready to assist you in English or any other language you prefer! How can I help?`;
+                    aiReply = `I have received your message, Jounayad Ahmed. I am ready to assist you in English or any other language you prefer. How can I help?`;
                 }
             }
 
             setTimeout(() => {
-                let btnText = detectedLang === 'bn' ? '🔊 ভয়েস শুনুন' : (detectedLang === 'ar' ? '🔊 استماع الصوت' : '🔊 Listen Voice');
-                let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}', '${detectedLang}')">${btnText}</button>`;
-                chatBox.innerHTML += `<div class="msg ai-msg">${fullHTML}</div>`;
+                let playText = detectedLang === 'bn' ? '🔊 ভয়েস শুনুন' : (detectedLang === 'ar' ? '🔊 استماع' : '🔊 Play Voice');
+                let stopText = detectedLang === 'bn' ? '⏹ বন্ধ করুন' : (detectedLang === 'ar' ? '⏹ إيقاف' : '⏹ Stop');
+
+                let actionRow = `
+                    <div class="msg ai-msg">
+                        ${escapeHtml(aiReply)}
+                        <div class="voice-action-row">
+                            <button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}', '${detectedLang}')">${playText}</button>
+                            <button class="stop-speech-btn" onclick="stopSpeech()">${stopText}</button>
+                        </div>
+                    </div>
+                `;
+                chatBox.innerHTML += actionRow;
                 
                 speakText(aiReply, detectedLang);
                 chatBox.scrollTop = chatBox.scrollHeight;
