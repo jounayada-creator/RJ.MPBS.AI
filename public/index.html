@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RJ MPBS AI - Universal Design Studio</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0b0f19;
+            --card: #111827;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #1f2937;
+            --accent: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        #loginModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.98); display: flex; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .login-box {
+            background: var(--card); border: 1px solid var(--border); padding: 40px; border-radius: 24px;
+            width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+        .login-logo { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; margin-bottom: 20px; border: 2px solid var(--primary); }
+        .login-box h1 { color: #fff; margin-bottom: 8px; font-size: 1.5rem; }
+        .login-box p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+        .login-box input {
+            width: 100%; padding: 14px 18px; background: #1a2234; border: 1px solid var(--border);
+            border-radius: 12px; color: #fff; margin-bottom: 16px; outline: none; font-size: 1rem;
+        }
+        .login-box button {
+            width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none;
+            border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s;
+        }
+        .login-box button:hover { background: var(--primary-hover); }
+
+        header {
+            background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo-container { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 1.2rem; color: #fff; }
+        .brand-logo-img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 2px solid var(--primary); }
+        .free-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+        .main-workspace { flex: 1; display: flex; max-width: 1400px; width: 100%; margin: 0 auto; padding: 20px; gap: 20px; overflow: hidden; }
+
+        .sidebar-panel {
+            width: 320px; background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+            display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto;
+        }
+        .agent-preview-box {
+            background: #1a2234; border: 2px dashed var(--primary); border-radius: 16px; padding: 12px; text-align: center;
+        }
+        .animated-avatar {
+            width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);
+            margin: 0 auto 8px auto; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        .agent-title { font-size: 0.95rem; font-weight: 600; color: #fff; }
+        .agent-sub { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
+
+        .tool-category h3 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tool-btn {
+            width: 100%; background: #1a2234; border: 1px solid var(--border); color: #fff; padding: 9px 12px;
+            border-radius: 10px; text-align: left; font-size: 0.83rem; cursor: pointer; margin-bottom: 6px; transition: 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tool-btn:hover { background: var(--primary); border-color: var(--primary); }
+
+        .chat-section { flex: 1; display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+        .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+        
+        .welcome-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex: 1; text-align: center; gap: 16px;
+        }
+        .welcome-logo { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; border: 3px solid var(--primary); }
+        .welcome-title { font-size: 2rem; font-weight: 700; color: #fff; }
+        .welcome-subtitle { color: var(--text-muted); font-size: 0.95rem; max-width: 550px; line-height: 1.5; }
+
+        .msg { padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; }
+        .user-msg { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-msg { background: #1a2234; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+
+        .input-bar-area { padding: 15px 20px; background: #0b0f19; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; }
+        .input-bar-area input {
+            flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; color: #fff; outline: none; font-size: 1rem;
+        }
+        .input-bar-area input:focus { border-color: var(--primary); }
+        .send-btn {
+            background: var(--primary); border: none; border-radius: 14px; width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
+        }
+        .send-btn:hover { background: var(--primary-hover); }
+        .send-btn svg { width: 20px; height: 20px; fill: #fff; }
+
+        @media(max-width: 768px) {
+            .main-workspace { flex-direction: column; padding: 10px; }
+            .sidebar-panel { width: 100%; max-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginModal">
+        <div class="login-box">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
+            <h1>RJ MPBS AI</h1>
+            <p>Enter your name to unlock All Design Categories</p>
+            <input type="text" id="userNameInput" placeholder="Your Name (e.g. Jounayad)">
+            <button onclick="loginUser()">Launch Design Studio</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-container">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
+            RJ MPBS AI - Universal Studio
+        </div>
+        <div class="free-badge">🎉 All Designs Free</div>
+    </header>
+
+    <div class="main-workspace">
+        <div class="sidebar-panel">
+            <div class="agent-preview-box">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" alt="AI Agent">
+                <div class="agent-title">RJ Live Expert</div>
+                <div class="agent-sub">● All Design Categories Open</div>
+            </div>
+
+            <div class="tool-category">
+                <h3>Universal Design Studio</h3>
+                <button class="tool-btn" onclick="triggerTool('Give me a professional logo design concept and color palette.')">🎨 Logo & Brand Identity</button>
+                <button class="tool-btn" onclick="triggerTool('Create a high-end apparel and t-shirt mockup design concept.')">👕 Apparel & T-Shirt Design</button>
+                <button class="tool-btn" onclick="triggerTool('Design custom sticker concepts and vector ideas.')">🏷️ Custom Stickers & Badges</button>
+                <button class="tool-btn" onclick="triggerTool('Design a social media ad banner and marketing post layout.')">📱 Social Media Ad Banners</button>
+                <button class="tool-btn" onclick="triggerTool('Create a daily planner, journal, or notebook layout design.')">📔 Daily Planners & Notebooks</button>
+                <button class="tool-btn" onclick="triggerTool('Give me a professional business card, flyer, or brochure design concept.')">💼 Business Cards & Flyers</button>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-messages" id="chatBox">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
+                    <div class="welcome-title" id="greetingTitle">Hi, User</div>
+                    <div class="welcome-subtitle">Generate professional concepts for logos, t-shirts, social media banners, daily planners, stickers, business cards, and any graphic design you need!</div>
+                </div>
+            </div>
+
+            <div class="input-bar-area">
+                <input type="text" id="userInput" placeholder="Ask for any design, layout, ad script, or creative concept..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="send-btn" onclick="sendMessage()" title="Send">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = "User";
+
+        function loginUser() {
+            const nameInput = document.getElementById('userNameInput').value.trim();
+            if(!nameInput) {
+                alert('Please enter your name.');
+                return;
+            }
+            currentUser = nameInput;
+            document.getElementById('greetingTitle').innerText = `Hi, ${currentUser}`;
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function triggerTool(promptText) {
+            document.getElementById('userInput').value = promptText;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('userInput');
+            const chatBox = document.getElementById('chatBox');
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const message = inputField.value.trim();
+
+            if(!message) return;
+
+            if(welcomeScreen) {
+                welcomeScreen.style.display = 'none';
+            }
+
+            chatBox.innerHTML += `<div class="msg user-msg">${escapeHtml(message)}</div>`;
+            inputField.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/ai-core', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message, userName: currentUser })
+                });
+                const data = await res.json();
+                
+                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(data.reply)}</div>`;
+            } catch (err) {
+                chatBox.innerHTML += `<div class="msg ai-msg">Connection error. Please try again.</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>
