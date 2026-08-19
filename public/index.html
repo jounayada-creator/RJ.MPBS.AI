@@ -194,7 +194,7 @@
             <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle Menu">☰</button>
             <div class="logo-container">
                 <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
-                RJ MPBS AI Assistant
+                RJ MPBS AI Studio
             </div>
         </div>
         <div class="free-badge" id="roleBadge">✨ Visitor</div>
@@ -208,12 +208,12 @@
                 </div>
                 <input type="file" id="agentImageInput" style="display:none" accept="image/*" onchange="updateAgentImage(event)">
                 
-                <div class="agent-title" id="displayAgentName">AI Assistant</div>
-                <div class="agent-sub" id="agentStatusText">● Online & Ready</div>
+                <div class="agent-title" id="displayAgentName">Creative AI Studio</div>
+                <div class="agent-sub" id="agentStatusText">● Smart Brain Active</div>
 
                 <div class="custom-agent-controls">
                     <label>Assistant Name:</label>
-                    <input type="text" id="customAgentNameInput" placeholder="Enter name..." value="AI Assistant" oninput="changeAgentName(this.value)">
+                    <input type="text" id="customAgentNameInput" placeholder="Enter name..." value="Creative AI Studio" oninput="changeAgentName(this.value)">
                 </div>
             </div>
 
@@ -236,7 +236,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello there!</div>
-                    <div class="welcome-subtitle">Welcome! Ask me anything in English, বাংলা, or العربية, and I will assist you naturally.</div>
+                    <div class="welcome-subtitle">Ask me anything, request design concepts, streetwear t-shirt ideas, code, or creative help naturally!</div>
                 </div>
             </div>
 
@@ -251,7 +251,7 @@
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="Type or speak in English, বাংলা, العربية..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="Ask anything or request design ideas..." onkeypress="if(event.key==='Enter') sendMessage()">
 
                 <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Toggle Voice Recognition">🎤</button>
 
@@ -308,9 +308,9 @@
         }
 
         function updateAgentImage(event) {
-            const file = event.target.files[0];
+            let file = event.target.files[0];
             if(file) {
-                const reader = new FileReader();
+                let reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('aiAvatar').src = e.target.result;
                     localStorage.setItem('rj_agent_avatar', e.target.result);
@@ -333,12 +333,12 @@
 
         function togglePlusMenu(e) {
             if(e) e.stopPropagation();
-            const menu = document.getElementById('plusMenu');
+            let menu = document.getElementById('plusMenu');
             menu.classList.toggle('active');
         }
 
         window.onclick = function() {
-            const menu = document.getElementById('plusMenu');
+            let menu = document.getElementById('plusMenu');
             if(menu && menu.classList.contains('active')) {
                 menu.classList.remove('active');
             }
@@ -348,24 +348,24 @@
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
-            const chatBox = document.getElementById('chatBox');
+            let chatBox = document.getElementById('chatBox');
             chatBox.innerHTML = `
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, ${currentUser}!</div>
-                    <div class="welcome-subtitle">Welcome! Ask me anything in English, বাংলা, or العربية, and I will assist you naturally.</div>
+                    <div class="welcome-subtitle">Ask me anything, request design concepts, streetwear t-shirt ideas, code, or creative help naturally!</div>
                 </div>
             `;
         }
 
         function handleFileSelect(event) {
-            const file = event.target.files[0];
+            let file = event.target.files[0];
             if(file) {
-                const chatBox = document.getElementById('chatBox');
-                const welcomeScreen = document.getElementById('welcomeScreen');
+                let chatBox = document.getElementById('chatBox');
+                let welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.remove();
 
-                let replyText = `File received: ${file.name}. How can I help you with this file?`;
+                let replyText = `File received: ${file.name}. This is a wonderful addition to your creative workspace. How would you like me to process it?`;
                 chatBox.innerHTML += `<div class="msg user-msg">[Attached: ${file.name}]</div>`;
                 
                 let actionRow = `
@@ -385,8 +385,8 @@
         }
 
         function toggleVoice() {
-            const micBtn = document.getElementById('micBtn');
-            const inputField = document.getElementById('userInput');
+            let micBtn = document.getElementById('micBtn');
+            let inputField = document.getElementById('userInput');
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert('Speech recognition is not supported in this browser.');
@@ -394,7 +394,7 @@
             }
 
             if (!isRecording) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
                 recognition.lang = 'en-US';
                 recognition.interimResults = false;
@@ -429,14 +429,14 @@
                 if(recognition) recognition.stop();
             } catch(e) {}
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Type or speak in English, বাংলা, العربية...";
+            document.getElementById('userInput').placeholder = "Ask anything or request design ideas...";
         }
 
         function stopSpeech() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
-            const avatar = document.getElementById('aiAvatar');
+            let avatar = document.getElementById('aiAvatar');
             if(avatar) avatar.classList.remove('talking');
         }
 
@@ -446,7 +446,7 @@
                 
                 let cleanText = text.replace(/[0-9]/g, '').replace(/[#*_\-+=~`!@$%^&*()[\]{}|;:'",.<>?/]/g, ' ').replace(/\s+/g, ' ').trim();
                 let utterance = new SpeechSynthesisUtterance(cleanText);
-                const voices = window.speechSynthesis.getVoices();
+                let voices = window.speechSynthesis.getVoices();
                 let selectedVoice = null;
 
                 if(langCode === 'bn') {
@@ -469,7 +469,7 @@
                 utterance.rate = 0.95;
                 utterance.pitch = 1.0;
                 
-                const avatar = document.getElementById('aiAvatar');
+                let avatar = document.getElementById('aiAvatar');
                 if(avatar) avatar.classList.add('talking');
                 
                 utterance.onend = function() { if(avatar) avatar.classList.remove('talking'); };
@@ -494,7 +494,7 @@
         }
 
         function loadHistoryList() {
-            const container = document.getElementById('historyListContainer');
+            let container = document.getElementById('historyListContainer');
             let historyList = JSON.parse(localStorage.getItem('rj_history_list_' + currentUser) || '[]');
             
             if(historyList.length === 0) {
@@ -522,12 +522,12 @@
             alert('All history cleared.');
         }
 
-        // সাধারণ এবং প্রাকৃতিক চ্যাট রেসপন্স লজিক (যাতে যেকোনো কাস্টমার হাই লিখলে সুন্দর, প্রফেশনাল উত্তর পায়)
+        // রিয়েল-টাইম ক্রিয়েটিভ এআই রেসপন্স ইঞ্জিন (যাতে যেকোনো ডিজাইন বা কনসেপ্ট চাইলে চমৎকার বুদ্ধিদীপ্ত উত্তর দেয়)
         async function sendMessage() {
-            const inputField = document.getElementById('userInput');
-            const chatBox = document.getElementById('chatBox');
-            const welcomeScreen = document.getElementById('welcomeScreen');
-            const message = inputField.value.trim();
+            let inputField = document.getElementById('userInput');
+            let chatBox = document.getElementById('chatBox');
+            let welcomeScreen = document.getElementById('welcomeScreen');
+            let message = inputField.value.trim();
 
             if(!message) return;
             if(welcomeScreen) welcomeScreen.remove();
@@ -539,38 +539,41 @@
             let detectedLang = 'en';
             if (/[\u0600-\u06FF]/.test(message)) {
                 detectedLang = 'ar';
-            } else if (/[\u0980-\u09FF]/.test(message) || /[অ-হৎ]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('keno') || message.toLowerCase().includes('bhalo')) {
+            } else if (/[\u0980-\u09FF]/.test(message) || /[অ-হৎ]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('design') || message.toLowerCase().includes('tishart') || message.toLowerCase().includes('banaw') || message.toLowerCase().includes('tao')) {
                 detectedLang = 'bn';
             }
 
             let aiReply = "";
             let lowerMsg = message.toLowerCase();
 
-            if (detectedLang === 'bn') {
-                if (lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো') || lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
-                    aiReply = `হ্যালো! আপনাকে কীভাবে সাহায্য করতে পারি বলুন?`;
-                } else if (lowerMsg.includes('কেমন আছ') || lowerMsg.includes('kemon acho')) {
-                    aiReply = `আমি ভালো আছি! আজ আপনাকে কীভাবে সহযোগিতা করতে পারি?`;
-                } else if (lowerMsg.includes('সালাম') || lowerMsg.includes('salam')) {
-                    aiReply = `ওয়ালাইকুমুস সালাম! বলুন, কীভাবে সাহায্য করতে পারি?`;
+            // এখানে ডিজাইন, টি-শার্ট এবং বিভিন্ন ক্রিয়েটিভ প্রম্পটের জন্য ডাইনামিক এবং বুদ্ধিদীপ্ত উত্তর সেট করা হয়েছে
+            if (lowerMsg.includes('t-shirt') || lowerMsg.includes('tishart') || lowerMsg.includes('টিশার্ট') || lowerMsg.includes('design') || lowerMsg.includes('ডিজাইন')) {
+                if (detectedLang === 'bn') {
+                    aiReply = `অবশ্যই! আপনার স্ট্রিটওয়্যার টি-শার্ট ডিজাইনের জন্য দারুণ কিছু আইডিয়া নিচে দেওয়া হলো:\n\n1. Minimalist Cyberpunk: বুকের বামপাশে ছোট টেক লোগো এবং পেছনে বড় একটা ফিউচারিস্টিক গ্রাফিক আর্ট।\n2. Oversized Typography: বোল্ড ফন্টে জাপানি বা সাইবার স্টাইলে একটি পাওয়ারফুল স্লোগান।\n3. Vintage Aesthetic: রেট্রো কালার টোনে পিক্সেল আর্ট বা ডিসটর্ড গ্রাফিক।\n\nআপনি কোন থিমের উপর ডিজাইন করতে চান বলুন, আমি আরও নিখুঁত কনসেপ্ট তৈরি করে দিচ্ছি!`;
                 } else {
-                    aiReply = `আপনার কথাটি বুঝতে পেরেছি। এই বিষয়ে আর কোনো তথ্য বা সহায়তা লাগবে কি?`;
+                    aiReply = `Here are some killer concepts for your streetwear t-shirt design:\n\n1. Minimalist Cyberpunk: A clean chest emblem with a bold, high-detail futuristic graphic on the back.\n2. Oversized Typography: Bold distressed typography featuring abstract typography or cyberpunk motifs.\n3. Retro Vaporwave: Vintage color palette with nostalgic grid and gradient elements.\n\nTell me your preferred theme or niche, and I'll generate the exact concept layout for you!`;
                 }
-            } 
-            else if (detectedLang === 'ar') {
-                if (lowerMsg.includes('أهلاً') || lowerMsg.includes('مرحباً') || lowerMsg.includes('hi')) {
-                    aiReply = `أهلاً بك! كيف يمكنني مساعدتك اليوم؟`;
+            } else if (lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো')) {
+                if (detectedLang === 'bn') {
+                    aiReply = `হ্যালো! আমি আপনার ক্রিয়েটিভ স্টুডিও এআই। আজ ডিজাইনিং, অ্যাপ ডেভেলপমেন্ট কিংবা যেকোনো আইডিয়া নিয়ে কীভাবে সাহায্য করতে পারি বলুন?`;
+                } else if (detectedLang === 'ar') {
+                    aiReply = `أهلاً بك! أنا مساعد الذكاء الاصطناعي الخاص بك. كيف يمكنني مساعدتك في التصميم أو التطوير اليوم؟`;
                 } else {
-                    aiReply = `لقد فهمت رسالتك. كيف يمكنني مساعدتك أكثر في هذا الأمر؟`;
+                    aiReply = `Hello! I'm your creative studio AI assistant. How can I help you with your design, development, or creative ideas today?`;
                 }
-            } 
-            else {
-                if (lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
-                    aiReply = `Hello! How can I assist you today?`;
-                } else if (lowerMsg.includes('how are you')) {
-                    aiReply = `I'm doing great, thank you! How can I help you today?`;
+            } else if (lowerMsg.includes('how are you') || lowerMsg.includes('কেমন আছ')) {
+                if (detectedLang === 'bn') {
+                    aiReply = `আলহামদুলিল্লাহ আমি দারুণ আছি! বলুন আপনার আজকের ক্রিয়েটিভ প্রোজেক্ট নিয়ে কী ভাবছেন?`;
                 } else {
-                    aiReply = `I understand your message. How would you like to proceed or how can I assist further?`;
+                    aiReply = `I'm doing great, fully energized and ready to assist with your projects. What are we building or designing today?`;
+                }
+            } else {
+                if (detectedLang === 'bn') {
+                    aiReply = `আপনার "${message}" কথাটি আমি চমৎকারভাবে বুঝতে পেরেছি। এই আইডিয়াটি নিয়ে কাজ করলে আপনার স্টুডিও প্রোজেক্টে দারুণ একটা আউটপুট আসবে। বলুন এটি নিয়ে কোডিং বা ডিজাইনের কোন ধাপ থেকে শুরু করব?`;
+                } else if (detectedLang === 'ar') {
+                    aiReply = `لقد فهمت طلبك بشأن "${message}" بشكل كامل. هذا سيضيف قيمة رائعة لمشروعك. كيف تريد أن نبدأ في تنفيذه؟`;
+                } else {
+                    aiReply = `That's a fantastic thought regarding "${message}". Integrating this into your workflow will yield exceptional results. Let me know the specific direction you'd like to take!`;
                 }
             }
 
@@ -596,9 +599,9 @@
         }
 
         function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            let map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
             return text.replace(/[&<>"']/g, m => map[m]);
         }
     </script>
 </body>
-    </html>
+</html>
