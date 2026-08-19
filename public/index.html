@@ -166,7 +166,7 @@
 </head>
 <body>
 
-    <!-- সিক্যুরড লগইন মডাল (ফাঁকা ইনপুট ফিল্ড সহ) -->
+    <!-- লগইন মডাল -->
     <div id="loginModal">
         <div class="login-box">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
@@ -259,7 +259,6 @@
             let cleanName = userEmail.split('@')[0];
             currentUser = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
             
-            // শুধুমাত্র আপনার ইমেইল হলে তবেই অ্যাডমিন মোড অন হবে
             if(userEmail === ADMIN_EMAIL) {
                 isAdmin = true;
                 document.getElementById('roleBadge').innerText = "👑 Admin Mode Active";
@@ -491,12 +490,12 @@
             }
             else if(lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('map') || lowerMsg.includes('show') || lowerMsg.includes('লোকেশন') || lowerMsg.includes('ম্যাপ')) {
                 let placeName = message.replace('location', '').replace('show', '').replace('where', '').replace('map', '').replace('লোকেশন', '').replace('ম্যাপ', '').replace('দেখাও', '').trim();
-                if(!placeName) placeName = "Tourist Spot;
+                if(!placeName) placeName = "Tourist Spot";
                 
                 let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
                 let imageUrl = `https://pollinations.ai/p/${encodeURIComponent(placeName + ' scenic view realistic photography')}?width=500&height=300&nologo=true`;
 
-                aiReply = lang.code === 'bn-BD' ? `লোকেশন: ${placeName} এর ম্যাপ এবং ছবি নিচে দেওয়া হলো।` : `Here is.`;
+                aiReply = lang.code === 'bn-BD' ? `লোকেশন: ${placeName} এর ম্যাপ এবং ছবি নিচে দেওয়া হলো।` : `Here is the location view.`;
                 let mapBtnText = lang.code === 'bn-BD' ? "📍 গুগল ম্যাপে দেখুন" : "📍 View on Google Maps";
 
                 let replyHTML = `${escapeHtml(aiReply)}<br>
@@ -529,7 +528,7 @@
         }
 
         function escapeHtml(text) {
-            const map = { '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' };
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
             return text.replace(/[&<>"']/g, m => map[m]);
         }
     </script>
