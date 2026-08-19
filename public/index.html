@@ -53,7 +53,7 @@
 
         .main-workspace { flex: 1; display: flex; max-width: 1400px; width: 100%; margin: 0 auto; padding: 20px; gap: 20px; overflow: hidden; position: relative; }
 
-        /* সাইডবার প্যানেল যা এখন হাইড থাকবে এবং প্রয়োজনমতো থ্রি-ডট বা মেনু থেকে আসবে */
+        /* সাইডবার প্যানেল যা ড্রপডাউন মেনু বা টগল থেকে ওপেন হবে */
         .sidebar-panel {
             width: 320px; background: var(--card); border: 1px solid var(--border); border-radius: 20px;
             display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto; transition: 0.3s ease;
@@ -118,10 +118,6 @@
         
         .speak-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.85rem; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
         .speak-btn:hover { text-decoration: underline; }
-
-        .ai-img-preview { margin-top: 10px; max-width: 100%; border-radius: 12px; border: 1px solid var(--border); }
-        .map-link-btn { display: inline-block; margin-top: 8px; background: var(--accent); color: #000; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.85rem; }
-        .map-link-btn:hover { opacity: 0.9; }
 
         .input-bar-area { padding: 15px 20px; background: #0b0f19; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; position: relative; }
         
@@ -190,7 +186,7 @@
 
     <header>
         <div class="header-left">
-            <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar & Agent">☰</button>
+            <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle Menu">☰</button>
             <div class="logo-container">
                 <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
                 RJ MPBS AI - Studio
@@ -200,7 +196,7 @@
     </header>
 
     <div class="main-workspace">
-        <!-- সাইডবার প্যানেল (লোগো থেকে সরিয়ে এখানে মেনু টগল দিয়ে কন্ট্রোল করা হবে) -->
+        <!-- সাইডবার প্যানেল (এজেন্ট ও কাস্টমাইজেশন টুলস) -->
         <div class="sidebar-panel hidden" id="sidebarPanel">
             <div class="agent-preview-box">
                 <div class="animated-avatar-container" onclick="document.getElementById('agentImageInput').click()" title="Change Agent Image">
@@ -209,7 +205,7 @@
                 <input type="file" id="agentImageInput" style="display:none" accept="image/*" onchange="updateAgentImage(event)">
                 
                 <div class="agent-title" id="displayAgentName">RJ Live Expert</div>
-                <div class="agent-sub" id="agentStatusText">● Ready (Video Call Mode)</div>
+                <div class="agent-sub" id="agentStatusText">● Live Voice Ready</div>
 
                 <div class="custom-agent-controls">
                     <label>Agent Name:</label>
@@ -218,12 +214,11 @@
             </div>
 
             <div class="tool-category">
-                <h3>Quick Options</h3>
-                <button class="tool-btn" onclick="triggerTool('আসসালামু আলাইকুম')">👋 সালাম দিন</button>
-                <button class="tool-btn" onclick="triggerTool('বিশ্বের যেকোনো দেশের আজকের ও গতকালের লাইভ খবরাখবর কি?')">📰 বিশ্ব লাইভ নিউজ ফাইল</button>
-                <button class="tool-btn" onclick="triggerTool('أهلاً بك، كيف حالك اليوم؟')">🇸🇦 Arabic Greeting</button>
-                <button class="tool-btn" onclick="triggerTool('नमस्ते, आप कैसे हैं?')">🇮🇳 Hindi Greeting</button>
-                <button class="tool-btn" onclick="triggerTool('سلام، حال شما چطور است؟')">🇮🇷 Persian Greeting</button>
+                <h3>Quick Studio Tools</h3>
+                <button class="tool-btn" onclick="triggerTool('Give me a professional greeting.')">💬 Chat Assistant</button>
+                <button class="tool-btn" onclick="triggerTool('Show me the latest global news headlines.')">📰 Live News Brief</button>
+                <button class="tool-btn" onclick="triggerTool('Search the web for trending developer topics.')">🔍 Smart Search</button>
+                <button class="tool-btn" onclick="triggerTool('Generate a high-end streetwear t-shirt mockup design description.')">📷 Generate Image</button>
             </div>
         </div>
 
@@ -232,7 +227,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, Visitor</div>
-                    <div class="welcome-subtitle">I am your multilingual AI assistant. Speak or type in Bengali, Arabic, Hindi, Persian, or English! Click the top-left ☰ menu to customize your agent.</div>
+                    <div class="welcome-subtitle">Welcome to your studio AI. Talk or type naturally with studio-grade voice output! Click top-left ☰ to customize your agent.</div>
                 </div>
             </div>
 
@@ -240,14 +235,14 @@
                 <div class="plus-container">
                     <div class="plus-btn" onclick="togglePlusMenu(event)">+</div>
                     <div class="plus-menu" id="plusMenu">
-                        <div class="menu-option" onclick="toggleSidebar(); togglePlusMenu();">🤖 Agent Setup & Avatar</div>
-                        <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 Upload Image/File</div>
+                        <div class="menu-option" onclick="toggleSidebar(); togglePlusMenu();">🤖 Agent Settings</div>
+                        <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 Upload File/Image</div>
                         <div class="menu-option" onclick="clearChatHistory(); togglePlusMenu();">🗑️ Clear History</div>
                     </div>
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="Type message in Bengali, Arabic, Hindi, Persian..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="Ask anything or chat with voice..." onkeypress="if(event.key==='Enter') sendMessage()">
 
                 <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice Input">🎤</button>
 
@@ -279,7 +274,7 @@
             
             if(userEmail === ADMIN_EMAIL) {
                 isAdmin = true;
-                document.getElementById('roleBadge').innerText = "👑 Admin Mode Active";
+                document.getElementById('roleBadge').innerText = "👑 Admin Mode";
             } else {
                 isAdmin = false;
                 document.getElementById('roleBadge').innerText = `✨ ${currentUser}`;
@@ -326,18 +321,6 @@
             }
         }
 
-        // ভাষা ডিটেকশন ও ন্যাচারাল স্পিচ কোড
-        function detectLanguageAndScript(text) {
-            if (/[\u0980-\u09FF]/.test(text)) return { code: 'bn-BD', name: 'Bengali' };
-            if (/[\u0600-\u06FF]/.test(text)) {
-                // ফার্সি বনাম আরবি অক্ষর যাচাই (پی, چ, ژ, گ)
-                if (/[پچژگ]/.test(text)) return { code: 'fa-IR', name: 'Persian' };
-                return { code: 'ar-SA', name: 'Arabic' };
-            }
-            if (/[\u0900-\u097F]/.test(text)) return { code: 'hi-IN', name: 'Hindi' };
-            return { code: 'en-US', name: 'English' };
-        }
-
         function triggerTool(promptText) {
             document.getElementById('userInput').value = promptText;
             sendMessage();
@@ -363,10 +346,10 @@
                 const welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.style.display = 'none';
 
-                let replyText = `I have received your file successfully.`;
-                chatBox.innerHTML += `<div class="msg user-msg">[File attached: ${file.name}]</div>`;
-                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}', 'en-US')">🔊 Listen</button></div>`;
-                speakText(replyText, 'en-US');
+                let replyText = `I have successfully received your file: ${file.name}. How would you like me to process it?`;
+                chatBox.innerHTML += `<div class="msg user-msg">[Attached file: ${file.name}]</div>`;
+                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}')">🔊 Listen Voice</button></div>`;
+                speakText(replyText);
                 chatBox.scrollTop = chatBox.scrollHeight;
                 saveChatHistory();
             }
@@ -377,14 +360,14 @@
             const inputField = document.getElementById('userInput');
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Speech recognition not supported in this browser.');
+                alert('Speech recognition is not supported in this browser.');
                 return;
             }
 
             if (!recognition) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'bn-BD';
+                recognition.lang = 'en-US';
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
@@ -401,7 +384,7 @@
                 recognition.start();
                 isRecording = true;
                 micBtn.classList.add('recording');
-                inputField.placeholder = "Listening in your language...";
+                inputField.placeholder = "Listening to your voice...";
             } else {
                 recognition.stop();
                 stopVoiceUI();
@@ -411,29 +394,43 @@
         function stopVoiceUI() {
             isRecording = false;
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Type message in Bengali, Arabic, Hindi, Persian...";
+            document.getElementById('userInput').placeholder = "Ask anything or chat with voice...";
         }
 
-        // ইমু স্টাইল ভিডিও কল অ্যানিমেশন সমেত পারফেক্ট ভয়েস রিডার
-        function speakText(text, langCode) {
+        // নিখুঁত, প্রাকৃতিকভাবে কথা বলার স্টুডিও ভয়েস ইঞ্জিন (যেমন আমার মধ্যে কাজ করে)
+        function speakText(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                // সব ধরণের টেকনিক্যাল চিহ্ন বা পারসেন্টেজ ফিল্টার করে একদম ন্যাচারাল টেক্সট রিড করা হবে
-                let cleanTextForSpeech = text.replace(/[🏛️📰🗓️👑👋📍✨📷🗑️%]/g, '').trim();
-                let utterance = new SpeechSynthesisUtterance(cleanTextForSpeech);
                 
-                utterance.lang = langCode || 'en-US';
-                utterance.rate = 0.95;
+                // কোড বা বিশেষ চিহ্ন ফিল্টার করে পারফেক্ট ইংলিশ বা স্ট্যান্ডার্ড রিডিং নিশ্চিত করা
+                let cleanText = text.replace(/[🏛️📰🗓️👑👋📍✨📷🗑️%]/g, '').trim();
+                let utterance = new SpeechSynthesisUtterance(cleanText);
+                
+                // ব্রাউজারের বেস্ট ন্যাচারাল ভয়েস সিলেক্ট করা
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha'))) || voices[0];
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+
+                utterance.rate = 1.0;
                 utterance.pitch = 1.0;
                 
                 const avatar = document.getElementById('aiAvatar');
-                if(avatar) avatar.classList.add('talking'); // ভিডিও কল ভাইব্রেশন শুরু
+                if(avatar) avatar.classList.add('talking'); // ইমু স্টাইল কল অ্যানিমেশন শুরু
                 
                 utterance.onend = function() { if(avatar) avatar.classList.remove('talking'); };
                 utterance.onerror = function() { if(avatar) avatar.classList.remove('talking'); };
 
                 window.speechSynthesis.speak(utterance);
             }
+        }
+
+        // ব্রাউজারের ভয়েস লিস্ট লোড নিশ্চিত করার জন্য
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
         }
 
         function saveChatHistory() {
@@ -469,63 +466,33 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const lowerMsg = message.toLowerCase();
-            const lang = detectLanguageAndScript(message);
             let aiReply = "";
-            let voiceLabel = lang.code === 'bn-BD' ? "ভয়েস শুনুন" : (lang.code === 'ar-SA' ? "استماع الصوت" : (lang.code === 'fa-IR' ? "گگوش دادن صدا" : (lang.code === 'hi-IN' ? "आवाज़ सुनें" : "Listen Voice")));
 
-            // বিভিন্ন ভাষা অনুযায়ী স্মার্ট রেসপন্স
-            if (lang.code === 'ar-SA') {
-                if (lowerMsg.includes('سلام') || lowerMsg.includes('أهلاً')) {
-                    aiReply = `وعليكم السلام ورحمة الله وبركاته يا ${currentUser}! كيف يمكنني مساعدتك اليوم؟`;
-                } else {
-                    aiReply = `أهلاً بك يا ${currentUser}! لقد فهمت رسالتك باللغة العربية، أنا هنا لمساعدتك بكل سرور.`;
-                }
-            } 
-            else if (lang.code === 'fa-IR') {
-                if (lowerMsg.includes('سلام')) {
-                    aiReply = `سلام و درود بر شما ${currentUser} عزیز! امروز چطور می‌توانم کمکتان کنم؟`;
-                } else {
-                    aiReply = `درود ${currentUser}! پیام شما را به زبان فارسی دریافت کردم. چطور می‌توانم یاری‌تان کنم؟`;
-                }
+            // প্রফেশনাল স্টুডিও স্ট্যান্ডার্ড রেসপন্স ও লজিক
+            if (lowerMsg.includes('greeting') || lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
+                aiReply = `Hello ${currentUser}! I am your studio AI assistant, fully optimized with crystal-clear voice capabilities. How can I assist your workflow today?`;
             }
-            else if (lang.code === 'hi-IN') {
-                if (lowerMsg.includes('नमस्ते') || lowerMsg.includes('سلام')) {
-                    aiReply = `नमस्ते ${currentUser}! मैं आपकी किस प्रकार सहायता कर सकता हूँ?`;
-                } else {
-                    aiReply = `धन्यवाद ${currentUser}! मैंने आपकी बात समझ ली है।`;
-                }
+            else if (lowerMsg.includes('news') || lowerMsg.includes('global')) {
+                aiReply = `Here is your live studio news briefing: Tech markets are expanding rapidly with automated AI workflows and modern web solutions.`;
             }
-            else { // বাংলা ও ইংরেজি
-                if (lowerMsg.includes('assalamu') || lowerMsg.includes('salam') || lowerMsg.includes('সালাম')) {
-                    aiReply = lang.code === 'bn-BD' ? 
-                        `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! হ্যালো ${currentUser}, বলুন আজ কীভাবে সাহায্য করতে পারি?` : 
-                        `Wa Alaikum Assalam! Hello ${currentUser}, how can I help you?`;
-                }
-                else if (lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই') || lowerMsg.includes('হ্যাল্লো')) {
-                    aiReply = lang.code === 'bn-BD' ? 
-                        `হ্যালো ${currentUser}! আমি আপনার এআই সহকারী। বলুন আজ কীভাবে সাহায্য করতে পারি?` : 
-                        `Hello ${currentUser}! I am your AI assistant. How can I help you today?`;
-                }
-                else if (lowerMsg.includes('pyramid') || lowerMsg.includes('পিরামিড')) {
-                    aiReply = lang.code === 'bn-BD' ? 
-                        `মিশরের পিরামিডগুলো প্রাচীন ফারাওদের রাজকীয় সমাধি হিসেবে তৈরি করা হয়েছিল।` : 
-                        `The pyramids of Egypt were built as royal tombs for ancient Pharaohs.`;
-                }
-                else {
-                    aiReply = lang.code === 'bn-BD' ? 
-                        `ধন্যবাদ ${currentUser}! আপনার কথা বুঝতে পেরেছি। বলুন আর কী জানতে চান?` : 
-                        `Thank you, ${currentUser}! I understand your message. How else can I assist you?`;
-                }
+            else if (lowerMsg.includes('search')) {
+                aiReply = `Smart search query processed successfully. Your developer tools and cloud services are running smoothly.`;
+            }
+            else if (lowerMsg.includes('image') || lowerMsg.includes('mockup')) {
+                aiReply = `Image generation module active. Ready to process your custom streetwear t-shirt mockups and minimalist graphic assets.`;
+            }
+            else {
+                aiReply = `I understand your request, ${currentUser}. Everything is configured and fully operational in your studio dashboard.`;
             }
 
             setTimeout(() => {
-                let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}', '${lang.code}')">🔊 ${voiceLabel}</button>`;
+                let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}')">🔊 Listen Voice</button>`;
                 chatBox.innerHTML += `<div class="msg ai-msg">${fullHTML}</div>`;
                 
-                speakText(aiReply, lang.code);
+                speakText(aiReply);
                 chatBox.scrollTop = chatBox.scrollHeight;
                 saveChatHistory();
-            }, 500);
+            }, 400);
         }
 
         function escapeHtml(text) {
