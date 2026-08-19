@@ -183,7 +183,7 @@
         <div class="login-box">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
             <h1>RJ MPBS AI</h1>
-            <p>Please enter your Gmail to access the studio</p>
+            <p>Please enter your Gmail to access</p>
             <input type="email" id="userNameInput" placeholder="Enter your Gmail address..." autocomplete="off">
             <button onclick="loginUser()">Get Started</button>
         </div>
@@ -194,10 +194,10 @@
             <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle Menu">☰</button>
             <div class="logo-container">
                 <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
-                RJ MPBS AI - Studio
+                RJ MPBS AI Assistant
             </div>
         </div>
-        <div class="free-badge" id="roleBadge">✨ Visitor Mode</div>
+        <div class="free-badge" id="roleBadge">✨ Visitor</div>
     </header>
 
     <div class="main-workspace">
@@ -208,12 +208,12 @@
                 </div>
                 <input type="file" id="agentImageInput" style="display:none" accept="image/*" onchange="updateAgentImage(event)">
                 
-                <div class="agent-title" id="displayAgentName">RJ Live Expert</div>
-                <div class="agent-sub" id="agentStatusText">● Live Intelligent AI</div>
+                <div class="agent-title" id="displayAgentName">AI Assistant</div>
+                <div class="agent-sub" id="agentStatusText">● Online & Ready</div>
 
                 <div class="custom-agent-controls">
-                    <label>Agent Name:</label>
-                    <input type="text" id="customAgentNameInput" placeholder="Enter agent name..." value="RJ Live Expert" oninput="changeAgentName(this.value)">
+                    <label>Assistant Name:</label>
+                    <input type="text" id="customAgentNameInput" placeholder="Enter name..." value="AI Assistant" oninput="changeAgentName(this.value)">
                 </div>
             </div>
 
@@ -235,8 +235,8 @@
             <div class="chat-messages" id="chatBox">
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
-                    <div class="welcome-title" id="greetingTitle">Hello, Visitor</div>
-                    <div class="welcome-subtitle">Welcome to your intelligent studio AI. Ask me anything in English, বাংলা, or العربية, and I will answer with full AI reasoning!</div>
+                    <div class="welcome-title" id="greetingTitle">Hello there!</div>
+                    <div class="welcome-subtitle">Welcome! Ask me anything in English, বাংলা, or العربية, and I will assist you naturally.</div>
                 </div>
             </div>
 
@@ -244,14 +244,14 @@
                 <div class="plus-container">
                     <div class="plus-btn" onclick="togglePlusMenu(event)">+</div>
                     <div class="plus-menu" id="plusMenu">
-                        <div class="menu-option" onclick="toggleSidebar(); togglePlusMenu();">🤖 Agent Settings & History</div>
+                        <div class="menu-option" onclick="toggleSidebar(); togglePlusMenu();">🤖 Settings & History</div>
                         <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 Upload File/Image</div>
                         <div class="menu-option" onclick="startNewChat(); togglePlusMenu();">✨ New Chat</div>
                     </div>
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="Ask anything intelligently in English, বাংলা, العربية..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="Type or speak in English, বাংলা, العربية..." onkeypress="if(event.key==='Enter') sendMessage()">
 
                 <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Toggle Voice Recognition">🎤</button>
 
@@ -289,7 +289,7 @@
                 document.getElementById('roleBadge').innerText = `✨ ${currentUser}`;
             }
 
-            document.getElementById('greetingTitle').innerText = `Hello, ${currentUser}`;
+            document.getElementById('greetingTitle').innerText = `Hello, ${currentUser}!`;
             document.getElementById('loginModal').style.display = 'none';
             loadPreferences();
             startNewChat();
@@ -352,8 +352,8 @@
             chatBox.innerHTML = `
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
-                    <div class="welcome-title" id="greetingTitle">Hello, ${currentUser}</div>
-                    <div class="welcome-subtitle">Welcome to your intelligent studio AI. Ask me anything in English, বাংলা, or العربية, and I will answer with full AI reasoning!</div>
+                    <div class="welcome-title" id="greetingTitle">Hello, ${currentUser}!</div>
+                    <div class="welcome-subtitle">Welcome! Ask me anything in English, বাংলা, or العربية, and I will assist you naturally.</div>
                 </div>
             `;
         }
@@ -365,7 +365,7 @@
                 const welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.remove();
 
-                let replyText = `File received: ${file.name}. I am ready to process and analyze this file for your studio workflow.`;
+                let replyText = `File received: ${file.name}. How can I help you with this file?`;
                 chatBox.innerHTML += `<div class="msg user-msg">[Attached: ${file.name}]</div>`;
                 
                 let actionRow = `
@@ -429,7 +429,7 @@
                 if(recognition) recognition.stop();
             } catch(e) {}
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Ask anything intelligently in English, বাংলা, العربية...";
+            document.getElementById('userInput').placeholder = "Type or speak in English, বাংলা, العربية...";
         }
 
         function stopSpeech() {
@@ -522,7 +522,7 @@
             alert('All history cleared.');
         }
 
-        // বুদ্ধিমত্তা ইঞ্জিন: রিয়েল-টাইম কনভার্সেশন এবং ডায়নামিক রেসপন্স লজিক যা যেকোনো প্রশ্নের চমৎকার ও লজিক্যাল উত্তর তৈরি করবে
+        // সাধারণ এবং প্রাকৃতিক চ্যাট রেসপন্স লজিক (যাতে যেকোনো কাস্টমার হাই লিখলে সুন্দর, প্রফেশনাল উত্তর পায়)
         async function sendMessage() {
             const inputField = document.getElementById('userInput');
             const chatBox = document.getElementById('chatBox');
@@ -539,35 +539,38 @@
             let detectedLang = 'en';
             if (/[\u0600-\u06FF]/.test(message)) {
                 detectedLang = 'ar';
-            } else if (/[\u0980-\u09FF]/.test(message) || /[অ-হৎ]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('keno') || message.toLowerCase().includes('bhai')) {
+            } else if (/[\u0980-\u09FF]/.test(message) || /[অ-হৎ]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('keno') || message.toLowerCase().includes('bhalo')) {
                 detectedLang = 'bn';
             }
 
-            // ইন্টেলিজেন্ট জেনারেটিভ রেসপন্স মেকানিজম (স্মার্ট ও লজিক্যাল উত্তর তৈরি করার জন্য)
             let aiReply = "";
             let lowerMsg = message.toLowerCase();
 
             if (detectedLang === 'bn') {
-                if (lowerMsg.includes('কেমন আছ') || lowerMsg.includes('kemon acho')) {
-                    aiReply = `আলহামদুলিল্লাহ আহমেদ ভাই! আপনার ইউনিভার্সাল স্টুডিওর এআই হিসেবে আমি পুরোপুরি প্রস্তুত এবং সচল আছি। বলুন আজ কোডিং, ডিজাইন কিংবা অন্য কোনো প্রোজেক্ট নিয়ে কীভাবে সাহায্য করতে পারি?`;
+                if (lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো') || lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
+                    aiReply = `হ্যালো! আপনাকে কীভাবে সাহায্য করতে পারি বলুন?`;
+                } else if (lowerMsg.includes('কেমন আছ') || lowerMsg.includes('kemon acho')) {
+                    aiReply = `আমি ভালো আছি! আজ আপনাকে কীভাবে সহযোগিতা করতে পারি?`;
                 } else if (lowerMsg.includes('সালাম') || lowerMsg.includes('salam')) {
-                    aiReply = `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ। আহমেদ ভাই, বলুন আপনার এই অসাধারণ স্টুডিওর জন্য আজকের পরিকল্পনা কী?`;
-                } else if (lowerMsg.includes('এটা করলে কি') || lowerMsg.includes('হবে কি না') || lowerMsg.includes('কিভাবে')) {
-                    aiReply = `অবশ্যই হবে আহমেদ ভাই! আপনি যেভাবে চিন্তা করছেন, সেটি যদি ধাপে ধাপে কোড বা অটোমেশনের মাধ্যমে সাজানো যায়, তবে এটি আপনার প্রোজেক্টকে আরও অনেক দূর এগিয়ে নিয়ে যাবে। বলুন এই বিষয়ে ঠিক কোন অংশটা নিয়ে কাজ শুরু করব?`;
+                    aiReply = `ওয়ালাইকুমুস সালাম! বলুন, কীভাবে সাহায্য করতে পারি?`;
                 } else {
-                    aiReply = `আপনার কথাটি আমি অত্যন্ত গুরুত্বের সাথে বুঝেছি, আহমেদ ভাই। "${message}" — এই বিষয়টি নিয়ে আমরা যদি নিখুঁتভাবে কোডিং বা লজিক সাজাই, তবে ফলাফল একদম আপনার মনের মতো হবে। বলুন এটার পরবর্তী ধাপ কী হবে?`;
+                    aiReply = `আপনার কথাটি বুঝতে পেরেছি। এই বিষয়ে আর কোনো তথ্য বা সহায়তা লাগবে কি?`;
                 }
             } 
             else if (detectedLang === 'ar') {
-                aiReply = `أهلاً بك يا أخي أحمد! أنا هنا لمساعدتك بكل ذكاء واحترافية في استوديو الخاص بك. كيف يمكنني دعمك في هذا الأمر اليوم؟`;
+                if (lowerMsg.includes('أهلاً') || lowerMsg.includes('مرحباً') || lowerMsg.includes('hi')) {
+                    aiReply = `أهلاً بك! كيف يمكنني مساعدتك اليوم؟`;
+                } else {
+                    aiReply = `لقد فهمت رسالتك. كيف يمكنني مساعدتك أكثر في هذا الأمر؟`;
+                }
             } 
             else {
-                if (lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
-                    aiReply = `Hello ${currentUser}! I am your intelligent studio companion. How can I assist you with your app development and design goals today?`;
-                } else if (lowerMsg.includes('how') || lowerMsg.includes('what') || lowerMsg.includes('why')) {
-                    aiReply = `That is a great strategic question, ${currentUser}. Based on your workspace parameters, implementing this approach will streamline your workflow efficiently. Let me know how you would like to structure it!`;
+                if (lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
+                    aiReply = `Hello! How can I assist you today?`;
+                } else if (lowerMsg.includes('how are you')) {
+                    aiReply = `I'm doing great, thank you! How can I help you today?`;
                 } else {
-                    aiReply = `I understand your point regarding "${message}", ${currentUser}. I am fully configured to reason through this and provide the exact logic you need for your studio.`;
+                    aiReply = `I understand your message. How would you like to proceed or how can I assist further?`;
                 }
             }
 
@@ -598,4 +601,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
