@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RJ MPBS AI - Universal Design Studio</title>
+    <title>RJ MPBS AI - Universal Studio</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -83,11 +83,18 @@
         .welcome-title { font-size: 2rem; font-weight: 700; color: #fff; }
         .welcome-subtitle { color: var(--text-muted); font-size: 0.95rem; max-width: 550px; line-height: 1.5; }
 
-        .msg { padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; }
+        .msg { padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; position: relative; }
         .user-msg { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
         .ai-msg { background: #1a2234; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        
+        /* ভয়েস রিড আউট বাটন */
+        .speak-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 0.85rem; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+        .speak-btn:hover { text-decoration: underline; }
 
-        /* ইনপুট বার ও প্লাস মেনু ডিজাইন */
+        .ai-img-preview { margin-top: 10px; max-width: 100%; border-radius: 12px; border: 1px solid var(--border); }
+        .map-link-btn { display: inline-block; margin-top: 8px; background: var(--accent); color: #000; padding: 6px 14px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.85rem; }
+        .map-link-btn:hover { opacity: 0.9; }
+
         .input-bar-area { padding: 15px 20px; background: #0b0f19; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; position: relative; }
         
         .plus-container { position: relative; }
@@ -114,7 +121,6 @@
         }
         .input-bar-area input:focus { border-color: var(--primary); }
 
-        /* ভয়েস মাইক্রোফোন বাটন */
         .mic-btn {
             background: var(--card); border: 1px solid var(--border); color: #fff; width: 44px; height: 44px;
             border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;
@@ -147,18 +153,18 @@
         <div class="login-box">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
             <h1>RJ MPBS AI</h1>
-            <p>Enter your name to unlock All Design Categories</p>
-            <input type="text" id="userNameInput" placeholder="Your Name (e.g. Jounayad)">
-            <button onclick="loginUser()">Launch Design Studio</button>
+            <p>আপনার জিমেইল দিয়ে স্টুডিওতে প্রবেশ করুন</p>
+            <input type="text" id="userNameInput" placeholder="আপনার জিমেইল (যেমন: yasin@gmail.com)">
+            <button onclick="loginUser()">শুরু করুন</button>
         </div>
     </div>
 
     <header>
         <div class="logo-container">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
-            RJ MPBS AI - Universal Studio
+            RJ MPBS AI - Studio
         </div>
-        <div class="free-badge">🎉 All Designs Free</div>
+        <div class="free-badge">🎉 লাইভ ভয়েস ও এআই অ্যাসিস্ট্যান্ট</div>
     </header>
 
     <div class="main-workspace">
@@ -166,17 +172,14 @@
             <div class="agent-preview-box">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" alt="AI Agent">
                 <div class="agent-title">RJ Live Expert</div>
-                <div class="agent-sub">● All Design Categories Open</div>
+                <div class="agent-sub">● ভয়েস ও চ্যাট একটিভ</div>
             </div>
 
             <div class="tool-category">
-                <h3>Universal Design Studio</h3>
-                <button class="tool-btn" onclick="triggerTool('Give me a professional logo design concept and color palette.')">🎨 Logo & Brand Identity</button>
-                <button class="tool-btn" onclick="triggerTool('Create a high-end apparel and t-shirt mockup design concept.')">👕 Apparel & T-Shirt Design</button>
-                <button class="tool-btn" onclick="triggerTool('Design custom sticker concepts and vector ideas.')">🏷️ Custom Stickers & Badges</button>
-                <button class="tool-btn" onclick="triggerTool('Design a social media ad banner and marketing post layout.')">📱 Social Media Ad Banners</button>
-                <button class="tool-btn" onclick="triggerTool('Create a daily planner, journal, or notebook layout design.')">📔 Daily Planners & Notebooks</button>
-                <button class="tool-btn" onclick="triggerTool('Give me a professional business card, flyer, or brochure design concept.')">💼 Business Cards & Flyers</button>
+                <h3>কুইক অপশন</h3>
+                <button class="tool-btn" onclick="triggerTool('হাই')">👋 হ্যালো বলুন</button>
+                <button class="tool-btn" onclick="triggerTool('কক্সবাজার সমুদ্র সৈকত লোকেশন দেখতে চাই')">📍 লোকেশন ও ছবি</button>
+                <button class="tool-btn" onclick="triggerTool('আমাকে একটি দারুণ আইডিয়া দিন।')">🎨 ক্রিয়েটিভ আইডিয়া</button>
             </div>
         </div>
 
@@ -184,26 +187,23 @@
             <div class="chat-messages" id="chatBox">
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
-                    <div class="welcome-title" id="greetingTitle">Hi, User</div>
-                    <div class="welcome-subtitle">Generate professional concepts for logos, t-shirts, social media banners, daily planners, stickers, business cards, and any graphic design you need!</div>
+                    <div class="welcome-title" id="greetingTitle">হ্যালো, ইউজার</div>
+                    <div class="welcome-subtitle">আমি আপনার পার্সোনাল ভয়েস এআই অ্যাসিস্ট্যান্ট। কথা বলুন, শুনুন এবং যেকোনো বিষয়ে সাহায্য নিন!</div>
                 </div>
             </div>
 
             <div class="input-bar-area">
-                <!-- প্লাস (+) বাটন ও পপআপ মেনু -->
                 <div class="plus-container">
                     <div class="plus-btn" onclick="togglePlusMenu(event)">+</div>
                     <div class="plus-menu" id="plusMenu">
-                        <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 ছবি বা স্ক্রিনশট দিন</div>
-                        <div class="menu-option" onclick="triggerTool('Give me a trending color palette for my design project.'); togglePlusMenu();">🎨 কালার প্যালেট</div>
-                        <div class="menu-option" onclick="triggerTool('Suggest creative concept ideas and layouts for my design.'); togglePlusMenu();">💡 আইডিয়া জেনারেটর</div>
+                        <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 ছবি বা ফাইল দিন</div>
+                        <div class="menu-option" onclick="triggerTool('আমাকে একটি দারুণ আইডিয়া দিন।'); togglePlusMenu();">💡 আইডিয়া নিন</div>
                     </div>
                 </div>
                 <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
 
-                <input type="text" id="userInput" placeholder="Ask for any design, layout, ad script, or creative concept..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <input type="text" id="userInput" placeholder="আপনার বার্তা বা ভয়েস কমান্ড দিন..." onkeypress="if(event.key==='Enter') sendMessage()">
 
-                <!-- ভয়েস (মাইক্রোফোন) বাটন -->
                 <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice Input">🎤</button>
 
                 <button class="send-btn" onclick="sendMessage()" title="Send">
@@ -219,13 +219,19 @@
         let isRecording = false;
 
         function loginUser() {
-            const nameInput = document.getElementById('userNameInput').value.trim();
-            if(!nameInput) {
-                alert('Please enter your name.');
+            let emailInput = document.getElementById('userNameInput').value.trim();
+            if(!emailInput) {
+                alert('দয়া করে আপনার জিমেইল লিখুন।');
                 return;
             }
-            currentUser = nameInput;
-            document.getElementById('greetingTitle').innerText = `Hi, ${currentUser}`;
+            
+            let cleanName = emailInput;
+            if(emailInput.includes('@')) {
+                cleanName = emailInput.split('@')[0];
+            }
+            currentUser = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+            
+            document.getElementById('greetingTitle').innerText = `হ্যালো, ${currentUser}`;
             document.getElementById('loginModal').style.display = 'none';
         }
 
@@ -254,32 +260,35 @@
                 const welcomeScreen = document.getElementById('welcomeScreen');
                 if(welcomeScreen) welcomeScreen.style.display = 'none';
 
-                chatBox.innerHTML += `<div class="msg user-msg">[ছবি যুক্ত করা হয়েছে: ${file.name}]</div>`;
-                chatBox.innerHTML += `<div class="msg ai-msg">আপনার ছবিটি পেয়েছি! এই ডিজাইন বা স্টাইলের ওপর ভিত্তি করে বিস্তারিত কনসেপ্ট তৈরি করে দিচ্ছি।</div>`;
+                chatBox.innerHTML += `<div class="msg user-msg">[ফাইল যুক্ত করা হয়েছে: ${file.name}]</div>`;
+                let replyText = `আপনার ফাইলটি পেয়েছি ${currentUser}! বলুন এটি নিয়ে কী করতে হবে।`;
+                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}')">🔊 ভয়েস শুনুন</button></div>`;
+                speakText(replyText);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
 
-        // ভয়েস রিকগনিশন (বাংলা ভয়েস টাইপিং)
+        // ১. ভয়েস ইনপুট (Speech to Text) ফাংশন
         function toggleVoice() {
             const micBtn = document.getElementById('micBtn');
             const inputField = document.getElementById('userInput');
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('আপনার ব্রাউজার ভয়েস ইনপুট সমর্থন করছে না। দয়া করে ক্রোম ব্রাউজার ব্যবহার করুন।');
+                alert('আপনার ব্রাউজার ভয়েস ইনপুট সমর্থন করছে না।');
                 return;
             }
 
             if (!recognition) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'bn-BD'; // বাংলা ভাষা
+                recognition.lang = 'bn-BD'; // বাংলা ভাষা সাপোর্ট
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
                 recognition.onresult = function(event) {
                     inputField.value = event.results[0][0].transcript;
                     stopVoiceUI();
+                    sendMessage(); // মুখে কথা শেষ করলেই অটোমেটিক মেসেজ সেন্ড হয়ে যাবে!
                 };
 
                 recognition.onerror = function() { stopVoiceUI(); };
@@ -300,7 +309,18 @@
         function stopVoiceUI() {
             isRecording = false;
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Ask for any design, layout, ad script, or creative concept...";
+            document.getElementById('userInput').placeholder = "আপনার বার্তা বা ভয়েস কমান্ড দিন...";
+        }
+
+        // ২. ভয়েস আউটপুট (Text to Speech) ফাংশন - এআই নিজ মুখে কথা বলবে
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // আগের কোনো ভয়েস চলছে কিনা তা থামিয়ে দেওয়া
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'bn-BD'; // বাংলা উচ্চারণ
+                utterance.rate = 1.0; // কথার গতি
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
         async function sendMessage() {
@@ -319,19 +339,45 @@
             inputField.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            try {
-                const res = await fetch('/api/ai-core', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message, userName: currentUser })
-                });
-                const data = await res.json();
+            // লোকেশন ও ইমেজ জেনারেশন হ্যান্ডলিং
+            const lowerMsg = message.toLowerCase();
+            if(lowerMsg.includes('লোকেশন') || lowerMsg.includes('কোথায়') || lowerMsg.includes('যাবো') || lowerMsg.includes('ম্যাপ')) {
+                let placeName = message.replace('লোকেশন', '').replace('দেখাও', '').replace('কোথায়', '').replace('যাবো', '').trim();
+                if(!placeName) placeName = "Tourist Spot";
                 
-                chatBox.innerHTML += `<div class="msg ai-msg">${escapeHtml(data.reply)}</div>`;
-            } catch (err) {
-                chatBox.innerHTML += `<div class="msg ai-msg">Connection error. Please try again.</div>`;
+                let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
+                let imageUrl = `https://pollinations.ai/p/${encodeURIComponent(placeName + ' scenic view realistic photography')}?width=500&height=300&nologo=true`;
+
+                let spokenText = `হ্যালো ${currentUser}, ${placeName} এর লোকেশন এবং ছবি নিচে দেওয়া হলো।`;
+                let replyHTML = `${spokenText}<br>
+                <a href="${mapUrl}" target="_blank" class="map-link-btn">📍 গুগল ম্যাপে লোকেশন দেখুন</a><br>
+                <img src="${imageUrl}" class="ai-img-preview" alt="Location View"><br>
+                <button class="speak-btn" onclick="speakText('${encodeURIComponent(spokenText)}')">🔊 ভয়েস শুনুন</button>`;
+
+                setTimeout(() => {
+                    chatBox.innerHTML += `<div class="msg ai-msg">${replyHTML}</div>`;
+                    speakText(spokenText);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, 500);
+                return;
             }
-            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // সাধারণ চ্যাট এবং গ্রিটিং লজিক
+            let aiReply = "";
+            if(lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো') || lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+                aiReply = `হ্যালো ${currentUser}, আপনি কেমন আছেন? আমি আপনাকে কীভাবে সাহায্য করতে পারি?`;
+            } else {
+                aiReply = `ধন্যবাদ ${currentUser}! আপনার কথাটি বুঝতে পেরেছি। বলুন এই বিষয়ে আর কী করতে হবে।`;
+            }
+
+            setTimeout(() => {
+                let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}')">🔊 ভয়েস শুনুন</button>`;
+                chatBox.innerHTML += `<div class="msg ai-msg">${fullHTML}</div>`;
+                
+                // এআই অটোমেটিক ভয়েসে উত্তরটি পড়ে শোনাবে
+                speakText(aiReply);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 600);
         }
 
         function escapeHtml(text) {
