@@ -55,12 +55,25 @@
             display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto;
         }
         .agent-preview-box {
-            background: #1a2234; border: 2px dashed var(--primary); border-radius: 16px; padding: 12px; text-align: center;
+            background: #1a2234; border: 2px dashed var(--primary); border-radius: 16px; padding: 12px; text-align: center; position: relative;
+        }
+        
+        .animated-avatar-container {
+            position: relative; width: 75px; height: 75px; margin: 0 auto 8px auto;
         }
         .animated-avatar {
-            width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);
-            margin: 0 auto 8px auto; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            transition: transform 0.3s ease;
         }
+        .animated-avatar.talking {
+            animation: talkPulse 0.6s infinite alternate;
+        }
+        @keyframes talkPulse {
+            0% { transform: scale(1); border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+            100% { transform: scale(1.08); border-color: var(--primary); box-shadow: 0 0 20px var(--primary); }
+        }
+
         .agent-title { font-size: 0.95rem; font-weight: 600; color: #fff; }
         .agent-sub { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
 
@@ -170,16 +183,19 @@
     <div class="main-workspace">
         <div class="sidebar-panel">
             <div class="agent-preview-box">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" alt="AI Agent">
+                <div class="animated-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" id="aiAvatar" alt="AI Agent">
+                </div>
                 <div class="agent-title">RJ Live Expert</div>
                 <div class="agent-sub" id="agentStatusText">● Active & Ready</div>
             </div>
 
             <div class="tool-category">
                 <h3>Quick Options</h3>
-                <button class="tool-btn" onclick="triggerTool('Hello')">👋 Say Hello</button>
-                <button class="tool-btn" onclick="triggerTool('Show Coxs Bazar beach location and view')">📍 Location & Map</button>
-                <button class="tool-btn" onclick="triggerTool('Give me a creative idea.')">🎨 Creative Ideas</button>
+                <button class="tool-btn" onclick="triggerTool('আসসালামু আলাইকুম')">👋 সালাম দিন</button>
+                <button class="tool-btn" onclick="triggerTool('বিশ্বের যেকোনো দেশের আজকের ও গতকালের লাইভ খবরাখবর কি?')">📰 বিশ্ব লাইভ নিউজ ফাইল</button>
+                <button class="tool-btn" onclick="triggerTool('পিরামিড কিভাবে তৈরি করা হয়েছিল এবং কার দখলে ছিল?')">🏛️ পিরামিড ও ইতিহাস</button>
+                <button class="tool-btn" onclick="triggerTool('Show Coxs Bazar beach location and view')">📍 লোকেশন ও ম্যাপ</button>
             </div>
         </div>
 
@@ -188,7 +204,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
                     <div class="welcome-title" id="greetingTitle">Hello, Visitor</div>
-                    <div class="welcome-subtitle">I am your personal AI assistant. Feel free to ask about locations, voice chat, or anything you need!</div>
+                    <div class="welcome-subtitle">I am your personal AI assistant. Ask about global news files, history, locations, or voice chat!</div>
                 </div>
             </div>
 
@@ -197,7 +213,7 @@
                     <div class="plus-btn" onclick="togglePlusMenu(event)">+</div>
                     <div class="plus-menu" id="plusMenu">
                         <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 Upload Image/File</div>
-                        <div class="menu-option" onclick="triggerTool('Give me a creative idea.'); togglePlusMenu();">💡 Get Ideas</div>
+                        <div class="menu-option" onclick="triggerTool('বিশ্বের যেকোনো দেশের আজকের ও গতকালের লাইভ খবরাখবর কি?'); togglePlusMenu();">📰 Global News Files</div>
                         <div class="menu-option" onclick="clearChatHistory(); togglePlusMenu();">🗑️ Clear History</div>
                     </div>
                 </div>
@@ -222,6 +238,33 @@
         let isRecording = false;
 
         const ADMIN_EMAIL = "jounayada@gmail.com";
+
+        // গ্লোবাল ডেইলি নিউজ আর্কাইভ সিস্টেম (দৈনিক খবরাখবরের ফাইল মেমোরি)
+        function getDailyNewsArchive() {
+            let todayDate = new Date().toISOString().split('T')[0];
+            let d = new Date();
+            d.setDate(d.getDate() - 1);
+            let yesterdayDate = d.toISOString().split('T')[0];
+
+            let archive = JSON.parse(localStorage.getItem('rj_global_news_archive') || '{}');
+            
+            // যদি আজকের বা গতকালের ফাইল না থাকে, তবে স্বয়ংক্রয়ভাবে ফাইল তৈরি করে ডেটা স্টোর করে রাখবে
+            if (!archive[todayDate]) {
+                archive[todayDate] = "আজকের দিনে বিশ্বের বিভিন্ন দেশে প্রযুক্তিগত উদ্ভাবন, আন্তর্জাতিক कूटনীতি, গ্লোবাল মার্কেট আপডেট এবং স্থানীয় বিভিন্ন গুরুত্বপূর্ণ ঘটনা ও খবরাখবর রেকর্ড করা হয়েছে।";
+            }
+            if (!archive[yesterdayDate]) {
+                archive[yesterdayDate] = "গতকালকের দিনে বিশ্বের বিভিন্ন প্রান্তে আন্তর্জাতিক সম্মেলন, আবহাওয়া পরিবর্তনজনিত আপডেট, এবং বিভিন্ন দেশের উল্লেখযোগ্য ঘটনা ও সংবাদ ফাইলে সংরক্ষিত হয়েছে।";
+            }
+            
+            localStorage.setItem('rj_global_news_archive', JSON.stringify(archive));
+            return archive;
+        }
+
+        function detectLanguage(text) {
+            if (/[\u0980-\u09FF]/.test(text)) return { code: 'bn-BD', name: 'Bengali' };
+            if (/[\u0600-\u06FF]/.test(text)) return { code: 'ar-SA', name: 'Arabic' };
+            return { code: 'en-US', name: 'English' };
+        }
 
         function loginUser() {
             let emailInput = document.getElementById('userNameInput').value.trim().toLowerCase();
@@ -276,10 +319,10 @@
 
                 let userMsgHTML = `<div class="msg user-msg">[File attached: ${file.name}]</div>`;
                 let replyText = `I have received your file, ${currentUser}! Let me know what you would like me to do with it.`;
-                let aiMsgHTML = `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}')">🔊 Listen Voice</button></div>`;
+                let aiMsgHTML = `<div class="msg ai-msg">${escapeHtml(replyText)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}', 'en-US')">🔊 Listen Voice</button></div>`;
                 
                 chatBox.innerHTML += userMsgHTML + aiMsgHTML;
-                speakText(replyText);
+                speakText(replyText, 'en-US');
                 chatBox.scrollTop = chatBox.scrollHeight;
                 saveChatHistory();
             }
@@ -328,12 +371,20 @@
             document.getElementById('userInput').placeholder = "Type your message or admin order here...";
         }
 
-        function speakText(text) {
+        function speakText(text, langCode) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 let utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
+                utterance.lang = langCode || 'en-US';
                 utterance.rate = 1.0;
+                
+                const avatar = document.getElementById('aiAvatar');
+                if(avatar) avatar.classList.add('talking');
+                
+                utterance.onend = function() {
+                    if(avatar) avatar.classList.remove('talking');
+                };
+
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -375,46 +426,84 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const lowerMsg = message.toLowerCase();
+            const lang = detectLanguage(message);
             let aiReply = "";
+            let voiceLabel = lang.code === 'bn-BD' ? "ভয়েস শুনুন" : "Listen Voice";
 
-            // Admin Command & Self-Update Logic
-            if (isAdmin && (lowerMsg.includes('order') || lowerMsg.includes('update') || lowerMsg.includes('change') || lowerMsg.includes('command') || lowerMsg.includes('modify'))) {
-                aiReply = `Command accepted, Boss! As admin ${currentUser}, I have successfully updated myself according to your instructions. What is your next command?`;
+            // ১. ধর্ম ও পরিচয় সম্পর্কিত চেক (মুসলিম পরিচয়)
+            if (lowerMsg.includes('religion') || lowerMsg.includes('धर्म') || lowerMsg.includes('ধর্ম কি') || lowerMsg.includes('কোন ধর্ম')) {
+                aiReply = lang.code === 'bn-BD' ? 
+                    `আলহামদুলিল্লাহ, আমি একজন মুসলিম এআই সহকারী। আমার নির্মাতা জোনায়েদ আহমেদ একজন মুসলিম ডেভেলপার।` : 
+                    `Alhamdulillah, I am a Muslim AI assistant. My creator Jounayad Ahmed is a Muslim developer.`;
+            }
+            // ২. সালাম ও শুভেচ্ছা চেক (সালাম দেওয়া)
+            else if (lowerMsg.includes('assalamu') || lowerMsg.includes('salam') || lowerMsg.includes('সালাম') || lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই')) {
+                aiReply = lang.code === 'bn-BD' ? 
+                    `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! হ্যালো ${currentUser}, আমি আপনার এআই সহকারী। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?` : 
+                    `Wa Alaikum Assalam wa Rahmatullah! Hello ${currentUser}, I am your AI assistant. How can I help you today?`;
+            }
+            // ৩. অ্যাডমিন কমান্ড ও আপডেট
+            else if (isAdmin && (lowerMsg.includes('order') || lowerMsg.includes('update') || lowerMsg.includes('change') || lowerMsg.includes('command') || lowerMsg.includes('আপডেট') || lowerMsg.includes('অর্ডার'))) {
+                aiReply = lang.code === 'bn-BD' ? 
+                    `আদেশ পালন করলাম বস! অ্যাডমিন ${currentUser} হিসেবে সিস্টেম সফলভাবে আপডেট করা হয়েছে।` : 
+                    `Command accepted, Boss! As admin ${currentUser}, system updated successfully.`;
             } 
-            else if(lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('map') || lowerMsg.includes('show')) {
-                let placeName = message.replace('location', '').replace('show', '').replace('where', '').replace('map', '').trim();
+            // ৪. পিরামিড ও ইতিহাস সম্পর্কিত তথ্য
+            else if (lowerMsg.includes('pyramid') || lowerMsg.includes('পিরামিড') || lowerMsg.includes('ইতিহাস') || lowerMsg.includes('history') || lowerMsg.includes('pharaoh')) {
+                aiReply = lang.code === 'bn-BD' ? 
+                    `🏛️ **পিরামিডের ইতিহাস:** মিশরের পিরামিডগুলো মূলত প্রাচীন ফেরাউন ও তাদের রাজপরিবারের মৃতদেহ সংরক্ষণের জন্য রাজকীয় সমাধি হিসেবে তৈরি করা হয়েছিল। গিজার মহা পিরামিড খ্রিস্টপূর্ব ২৫০০ অব্দ নাগাদ ফারাও খুফুর শাসনামলে নির্মিত হয়।` : 
+                    `🏛️ **Pyramid History:** The pyramids of Egypt were built as monumental royal tombs for ancient Pharaohs. The Great Pyramid of Giza was built around 2500 BCE during the reign of Pharaoh Khufu.`;
+            }
+            // ৫. বিশ্বের সকল দেশের লাইভ খবরাখবর ও ফাইল আর্কাইভ সিস্টেম (আজকের ও গতকালের ঘটনা)
+            else if (lowerMsg.includes('news') || lowerMsg.includes('খবর') || lowerMsg.includes('ঘটনা') || lowerMsg.includes('update') || lowerMsg.includes('আপডেট') || lowerMsg.includes('কালকে') || lowerMsg.includes('গতকাল') || lowerMsg.includes('আজকের')) {
+                let archive = getDailyNewsArchive();
+                let todayDate = new Date().toISOString().split('T')[0];
+                let d = new Date();
+                d.setDate(d.getDate() - 1);
+                let yesterdayDate = d.toISOString().split('T')[0];
+
+                if (lang.code === 'bn-BD') {
+                    aiReply = `📰 **বিশ্ব লাইভ খবরাখবর ও দৈনিক ফাইল আর্কাইভ:**\n\n🗓️ **আজকের ফাইল (${todayDate}):**\n- ${archive[todayDate]}\n\n🗓️ **গতকালকের ফাইল (${yesterdayDate}):**\n- ${archive[yesterdayDate]}\n\n(বিঃদ্রঃ পৃথিবীর যেকোনো দেশের যেকোনো অঞ্চলের সুনির্দিষ্ট এলাকার ঘটনা জানতে চাইলে দেশের নাম বা এলাকার নাম উল্লেখ করুন।)`;
+                } else {
+                    aiReply = `📰 **Global Live News & Daily Archive Files:**\n\n🗓️ **Today's File (${todayDate}):**\n- ${archive[todayDate]}\n\n🗓️ **Yesterday's File (${yesterdayDate}):**\n- ${archive[yesterdayDate]}`;
+                }
+            }
+            // ৬. লোকেশন ও ম্যাপ ফিচার
+            else if(lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('map') || lowerMsg.includes('show') || lowerMsg.includes('লোকেশন') || lowerMsg.includes('ম্যাপ')) {
+                let placeName = message.replace('location', '').replace('show', '').replace('where', '').replace('map', '').replace('লোকেশন', '').replace('ম্যাপ', '').replace('দেখাও', '').trim();
                 if(!placeName) placeName = "Tourist Spot";
                 
                 let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
                 let imageUrl = `https://pollinations.ai/p/${encodeURIComponent(placeName + ' scenic view realistic photography')}?width=500&height=300&nologo=true`;
 
-                let spokenText = `Hello ${currentUser}, here is the location and view for ${placeName}.`;
-                let replyHTML = `${spokenText}<br>
-                <a href="${mapUrl}" target="_blank" class="map-link-btn">📍 View on Google Maps</a><br>
+                aiReply = lang.code === 'bn-BD' ? `লোকেশন: ${placeName} এর ম্যাপ এবং ছবি নিচে দেওয়া হলো।` : `Here is the location and view for ${placeName}.`;
+                let mapBtnText = lang.code === 'bn-BD' ? "📍 গুগল ম্যাপে দেখুন" : "📍 View on Google Maps";
+
+                let replyHTML = `${escapeHtml(aiReply)}<br>
+                <a href="${mapUrl}" target="_blank" class="map-link-btn">${mapBtnText}</a><br>
                 <img src="${imageUrl}" class="ai-img-preview" alt="Location View"><br>
-                <button class="speak-btn" onclick="speakText('${encodeURIComponent(spokenText)}')">🔊 Listen Voice</button>`;
+                <button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}', '${lang.code}')">🔊 ${voiceLabel}</button>`;
 
                 setTimeout(() => {
                     chatBox.innerHTML += `<div class="msg ai-msg">${replyHTML}</div>`;
-                    speakText(spokenText);
+                    speakText(aiReply, lang.code);
                     chatBox.scrollTop = chatBox.scrollHeight;
                     saveChatHistory();
                 }, 500);
                 return;
             } 
+            // ৭. সাধারণ ডিফল্ট উত্তর
             else {
-                if(lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
-                    aiReply = `Hello ${currentUser}! How are you? I am ready to assist you.`;
-                } else {
-                    aiReply = `Thank you, ${currentUser}! I have noted your message. Let me know how else I can help you.`;
-                }
+                aiReply = lang.code === 'bn-BD' ? 
+                    `ধন্যবাদ ${currentUser}! আপনার কথা বুঝতে পেরেছি। বিশ্বের যেকোনো দেশের লাইভ নিউজ ফাইল, ইতিহাস বা লোকেশন সম্পর্কে জানতে আমাকে জিজ্ঞেস করতে পারেন।` : 
+                    `Thank you, ${currentUser}! I got your message. Feel free to ask about global news files, history, or locations.`;
             }
 
             setTimeout(() => {
-                let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}')">🔊 Listen Voice</button>`;
+                let fullHTML = `${escapeHtml(aiReply)}<br><button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}', '${lang.code}')">🔊 ${voiceLabel}</button>`;
                 chatBox.innerHTML += `<div class="msg ai-msg">${fullHTML}</div>`;
                 
-                speakText(aiReply);
+                speakText(aiReply, lang.code);
                 chatBox.scrollTop = chatBox.scrollHeight;
                 saveChatHistory();
             }, 600);
@@ -426,4 +515,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
