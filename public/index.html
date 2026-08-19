@@ -42,18 +42,22 @@
 
         header {
             background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 24px;
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 100;
         }
-        .logo-container { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 1.2rem; color: #fff; }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .menu-toggle-btn { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .logo-container { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; color: #fff; }
         .brand-logo-img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 2px solid var(--primary); }
         .free-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 
-        .main-workspace { flex: 1; display: flex; max-width: 1400px; width: 100%; margin: 0 auto; padding: 20px; gap: 20px; overflow: hidden; }
+        .main-workspace { flex: 1; display: flex; max-width: 1400px; width: 100%; margin: 0 auto; padding: 20px; gap: 20px; overflow: hidden; position: relative; }
 
         .sidebar-panel {
             width: 320px; background: var(--card); border: 1px solid var(--border); border-radius: 20px;
-            display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto;
+            display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto; transition: 0.3s ease;
         }
+        .sidebar-panel.hidden { display: none; }
+
         .agent-preview-box {
             background: #1a2234; border: 2px dashed var(--primary); border-radius: 16px; padding: 12px; text-align: center; position: relative;
         }
@@ -161,7 +165,6 @@
 </head>
 <body>
 
-    <!-- Professional English Login Modal -->
     <div id="loginModal">
         <div class="login-box">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
@@ -173,15 +176,18 @@
     </div>
 
     <header>
-        <div class="logo-container">
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
-            RJ MPBS AI - Studio
+        <div class="header-left">
+            <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle History & Tools">☰</button>
+            <div class="logo-container">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
+                RJ MPBS AI - Studio
+            </div>
         </div>
         <div class="free-badge" id="roleBadge">✨ Live AI Assistant</div>
     </header>
 
     <div class="main-workspace">
-        <div class="sidebar-panel">
+        <div class="sidebar-panel" id="sidebarPanel">
             <div class="agent-preview-box">
                 <div class="animated-avatar-container">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" id="aiAvatar" alt="AI Agent">
@@ -239,7 +245,11 @@
 
         const ADMIN_EMAIL = "jounayada@gmail.com";
 
-        // গ্লোবাল ডেইলি নিউজ আর্কাইভ সিস্টেম (দৈনিক খবরাখবরের ফাইল মেমোরি)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarPanel');
+            sidebar.classList.toggle('hidden');
+        }
+
         function getDailyNewsArchive() {
             let todayDate = new Date().toISOString().split('T')[0];
             let d = new Date();
@@ -248,9 +258,8 @@
 
             let archive = JSON.parse(localStorage.getItem('rj_global_news_archive') || '{}');
             
-            // যদি আজকের বা গতকালের ফাইল না থাকে, তবে স্বয়ংক্রয়ভাবে ফাইল তৈরি করে ডেটা স্টোর করে রাখবে
             if (!archive[todayDate]) {
-                archive[todayDate] = "আজকের দিনে বিশ্বের বিভিন্ন দেশে প্রযুক্তিগত উদ্ভাবন, আন্তর্জাতিক कूटনীতি, গ্লোবাল মার্কেট আপডেট এবং স্থানীয় বিভিন্ন গুরুত্বপূর্ণ ঘটনা ও খবরাখবর রেকর্ড করা হয়েছে।";
+                archive[todayDate] = "আজকের দিনে বিশ্বের বিভিন্ন দেশে প্রযুক্তিগত উদ্ভাবন, আন্তর্জাতিক কূটনীতি, গ্লোবাল মার্কেট আপডেট এবং স্থানীয় বিভিন্ন গুরুত্বপূর্ণ ঘটনা ও খবরাখবর রেকর্ড করা হয়েছে।";
             }
             if (!archive[yesterdayDate]) {
                 archive[yesterdayDate] = "গতকালকের দিনে বিশ্বের বিভিন্ন প্রান্তে আন্তর্জাতিক সম্মেলন, আবহাওয়া পরিবর্তনজনিত আপডেট, এবং বিভিন্ন দেশের উল্লেখযোগ্য ঘটনা ও সংবাদ ফাইলে সংরক্ষিত হয়েছে।";
@@ -340,7 +349,7 @@
             if (!recognition) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
-                recognition.lang = 'en-US';
+                recognition.lang = 'bn-BD'; // ভয়েস রিকগনিশন বাংলা ও ইংরেজি উভয় দেশের জন্য অটো এডজাস্ট হবে
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
 
@@ -371,17 +380,27 @@
             document.getElementById('userInput').placeholder = "Type your message or admin order here...";
         }
 
+        // সঠিক উচ্চারণ এবং ভাষা সেট করার জন্য উন্নত স্পিচ সিন্থেসিস ফাংশন
         function speakText(text, langCode) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                let utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = langCode || 'en-US';
-                utterance.rate = 1.0;
+                
+                // ইমোজি বা বিশেষ কারাক্টার বাদ দিয়ে শুধু পরিষ্কার টেক্সট ভয়েসে রিড করার জন্য প্রসেস করা হলো
+                let cleanTextForSpeech = text.replace(/[🏛️📰🗓️👑👋📍✨📷🗑️]/g, '').trim();
+                let utterance = new SpeechSynthesisUtterance(cleanTextForSpeech);
+                
+                utterance.lang = langCode || 'bn-BD';
+                utterance.rate = 0.95; // কথার গতি স্বাভাবিক রাখার জন্য
+                utterance.pitch = 1.0;
                 
                 const avatar = document.getElementById('aiAvatar');
                 if(avatar) avatar.classList.add('talking');
                 
                 utterance.onend = function() {
+                    if(avatar) avatar.classList.remove('talking');
+                };
+
+                utterance.onerror = function() {
                     if(avatar) avatar.classList.remove('talking');
                 };
 
@@ -430,31 +449,37 @@
             let aiReply = "";
             let voiceLabel = lang.code === 'bn-BD' ? "ভয়েস শুনুন" : "Listen Voice";
 
-            // ১. ধর্ম ও পরিচয় সম্পর্কিত চেক (মুসলিম পরিচয়)
+            // ১. ধর্ম পরিচয় চেক
             if (lowerMsg.includes('religion') || lowerMsg.includes('धर्म') || lowerMsg.includes('ধর্ম কি') || lowerMsg.includes('কোন ধর্ম')) {
                 aiReply = lang.code === 'bn-BD' ? 
                     `আলহামদুলিল্লাহ, আমি একজন মুসলিম এআই সহকারী। আমার নির্মাতা জোনায়েদ আহমেদ একজন মুসলিম ডেভেলপার।` : 
                     `Alhamdulillah, I am a Muslim AI assistant. My creator Jounayad Ahmed is a Muslim developer.`;
             }
-            // ২. সালাম ও শুভেচ্ছা চেক (সালাম দেওয়া)
-            else if (lowerMsg.includes('assalamu') || lowerMsg.includes('salam') || lowerMsg.includes('সালাম') || lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই')) {
+            // ২. সুনির্দিষ্ট সালাম চেক (শুধুমাত্র সালাম লিখলে তবেই ওয়ালাইকুমুস সালাম দিবে)
+            else if (lowerMsg.includes('assalamu') || lowerMsg.includes('salam') || lowerMsg.includes('সালাম')) {
                 aiReply = lang.code === 'bn-BD' ? 
-                    `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! হ্যালো ${currentUser}, আমি আপনার এআই সহকারী। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?` : 
-                    `Wa Alaikum Assalam wa Rahmatullah! Hello ${currentUser}, I am your AI assistant. How can I help you today?`;
+                    `ওয়ালাইকুমুস সালাম ওয়া রাহমাতুল্লাহ! হ্যালো ${currentUser}, বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?` : 
+                    `Wa Alaikum Assalam wa Rahmatullah! Hello ${currentUser}, how can I help you today?`;
             }
-            // ৩. অ্যাডমিন কমান্ড ও আপডেট
+            // ৩. সাধারণ হাই/হ্যালো চেক (শুধুমাত্র হ্যালো বা হাই লিখলে সালাম না দিয়ে প্রফেশনাল গ্রিটিং জানাবে)
+            else if (lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই') || lowerMsg.includes('হ্যাল্লো')) {
+                aiReply = lang.code === 'bn-BD' ? 
+                    `হ্যালো ${currentUser}! আমি আপনার এআই সহকারী। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?` : 
+                    `Hello ${currentUser}! I am your AI assistant. How can I help you today?`;
+            }
+            // ৪. অ্যাডমিন কমান্ড ও আপডেট
             else if (isAdmin && (lowerMsg.includes('order') || lowerMsg.includes('update') || lowerMsg.includes('change') || lowerMsg.includes('command') || lowerMsg.includes('আপডেট') || lowerMsg.includes('অর্ডার'))) {
                 aiReply = lang.code === 'bn-BD' ? 
                     `আদেশ পালন করলাম বস! অ্যাডমিন ${currentUser} হিসেবে সিস্টেম সফলভাবে আপডেট করা হয়েছে।` : 
                     `Command accepted, Boss! As admin ${currentUser}, system updated successfully.`;
             } 
-            // ৪. পিরামিড ও ইতিহাস সম্পর্কিত তথ্য
+            // ৫. পিরামিড ও ইতিহাস সম্পর্কিত তথ্য
             else if (lowerMsg.includes('pyramid') || lowerMsg.includes('পিরামিড') || lowerMsg.includes('ইতিহাস') || lowerMsg.includes('history') || lowerMsg.includes('pharaoh')) {
                 aiReply = lang.code === 'bn-BD' ? 
-                    `🏛️ **পিরামিডের ইতিহাস:** মিশরের পিরামিডগুলো মূলত প্রাচীন ফেরাউন ও তাদের রাজপরিবারের মৃতদেহ সংরক্ষণের জন্য রাজকীয় সমাধি হিসেবে তৈরি করা হয়েছিল। গিজার মহা পিরামিড খ্রিস্টপূর্ব ২৫০০ অব্দ নাগাদ ফারাও খুফুর শাসনামলে নির্মিত হয়।` : 
-                    `🏛️ **Pyramid History:** The pyramids of Egypt were built as monumental royal tombs for ancient Pharaohs. The Great Pyramid of Giza was built around 2500 BCE during the reign of Pharaoh Khufu.`;
+                    `পিরামিডের ইতিহাস: মিশরের পিরামিডগুলো মূলত প্রাচীন ফেরাউন ও তাদের রাজপরিবারের মৃতদেহ সংরক্ষণের জন্য রাজকীয় সমাধি হিসেবে তৈরি করা হয়েছিল। গিজার মহা পিরামিড খ্রিস্টপূর্ব ২৫০০ অব্দ নাগাদ ফারাও খুফুর শাসনামলে নির্মিত হয়।` : 
+                    `Pyramid History: The pyramids of Egypt were built as monumental royal tombs for ancient Pharaohs. The Great Pyramid of Giza was built around 2500 BCE during the reign of Pharaoh Khufu.`;
             }
-            // ৫. বিশ্বের সকল দেশের লাইভ খবরাখবর ও ফাইল আর্কাইভ সিস্টেম (আজকের ও গতকালের ঘটনা)
+            // ৬. বিশ্বের সকল দেশের লাইভ খবরাখবর ও ফাইল আর্কাইভ সিস্টেম
             else if (lowerMsg.includes('news') || lowerMsg.includes('খবর') || lowerMsg.includes('ঘটনা') || lowerMsg.includes('update') || lowerMsg.includes('আপডেট') || lowerMsg.includes('কালকে') || lowerMsg.includes('গতকাল') || lowerMsg.includes('আজকের')) {
                 let archive = getDailyNewsArchive();
                 let todayDate = new Date().toISOString().split('T')[0];
@@ -463,12 +488,12 @@
                 let yesterdayDate = d.toISOString().split('T')[0];
 
                 if (lang.code === 'bn-BD') {
-                    aiReply = `📰 **বিশ্ব লাইভ খবরাখবর ও দৈনিক ফাইল আর্কাইভ:**\n\n🗓️ **আজকের ফাইল (${todayDate}):**\n- ${archive[todayDate]}\n\n🗓️ **গতকালকের ফাইল (${yesterdayDate}):**\n- ${archive[yesterdayDate]}\n\n(বিঃদ্রঃ পৃথিবীর যেকোনো দেশের যেকোনো অঞ্চলের সুনির্দিষ্ট এলাকার ঘটনা জানতে চাইলে দেশের নাম বা এলাকার নাম উল্লেখ করুন।)`;
+                    aiReply = `বিশ্ব লাইভ খবরাখবর ও দৈনিক ফাইল আর্কাইভ। আজকের ফাইল (${todayDate}): ${archive[todayDate]}। গতকালকের ফাইল (${yesterdayDate}): ${archive[yesterdayDate]}।`;
                 } else {
-                    aiReply = `📰 **Global Live News & Daily Archive Files:**\n\n🗓️ **Today's File (${todayDate}):**\n- ${archive[todayDate]}\n\n🗓️ **Yesterday's File (${yesterdayDate}):**\n- ${archive[yesterdayDate]}`;
+                    aiReply = `Global Live News and Daily Archive Files. Today's File (${todayDate}): ${archive[todayDate]}. Yesterday's File (${yesterdayDate}): ${archive[yesterdayDate]}.`;
                 }
             }
-            // ৬. লোকেশন ও ম্যাপ ফিচার
+            // ৭. লোকেশন ও ম্যাপ ফিচার
             else if(lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('map') || lowerMsg.includes('show') || lowerMsg.includes('লোকেশন') || lowerMsg.includes('ম্যাপ')) {
                 let placeName = message.replace('location', '').replace('show', '').replace('where', '').replace('map', '').replace('লোকেশন', '').replace('ম্যাপ', '').replace('দেখাও', '').trim();
                 if(!placeName) placeName = "Tourist Spot";
@@ -492,7 +517,7 @@
                 }, 500);
                 return;
             } 
-            // ৭. সাধারণ ডিফল্ট উত্তর
+            // ৮. সাধারণ ডিফল্ট উত্তর
             else {
                 aiReply = lang.code === 'bn-BD' ? 
                     `ধন্যবাদ ${currentUser}! আপনার কথা বুঝতে পেরেছি। বিশ্বের যেকোনো দেশের লাইভ নিউজ ফাইল, ইতিহাস বা লোকেশন সম্পর্কে জানতে আমাকে জিজ্ঞেস করতে পারেন।` : 
@@ -510,9 +535,9 @@
         }
 
         function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            const map = { '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' };
             return text.replace(/[&<>"']/g, m => map[m]);
         }
     </script>
 </body>
-    </html>
+</html>
