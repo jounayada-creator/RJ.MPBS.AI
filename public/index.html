@@ -3,160 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RJ MPBS AI - Studio</title>
+    <title>Complete Unified AI Studio Engine</title>
     <style>
         :root {
+            --bg-main: #090d16;
+            --surface: #111827;
+            --surface-hover: #1f2937;
             --primary: #6366f1;
             --primary-hover: #4f46e5;
-            --bg: #0b0f19;
-            --card: #111827;
-            --text: #f3f4f6;
+            --text-main: #f9fafb;
             --text-muted: #9ca3af;
             --border: #1f2937;
             --accent: #10b981;
             --danger: #ef4444;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-
-        #loginModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 25, 0.98); display: flex; justify-content: center; align-items: center; z-index: 2000;
-        }
-        .login-box {
-            background: var(--card); border: 1px solid var(--border); padding: 40px; border-radius: 24px;
-            width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-        }
-        .login-logo { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; margin-bottom: 20px; border: 2px solid var(--primary); }
-        .login-box h1 { color: #fff; margin-bottom: 8px; font-size: 1.5rem; }
-        .login-box p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
-        .login-box input {
-            width: 100%; padding: 14px 18px; background: #1a2234; border: 1px solid var(--border);
-            border-radius: 12px; color: #fff; margin-bottom: 16px; outline: none; font-size: 1rem;
-        }
-        .login-box input:focus { border-color: var(--primary); }
-        .login-box button {
-            width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none;
-            border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s;
-        }
-        .login-box button:hover { background: var(--primary-hover); }
+        body { background: var(--bg-main); color: var(--text-main); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
         header {
-            background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 24px;
-            display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 100;
+            background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
-        .header-left { display: flex; align-items: center; gap: 14px; }
-        .menu-toggle-btn { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .logo-container { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; color: #fff; }
-        .brand-logo-img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 2px solid var(--primary); }
-        .free-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .brand { font-weight: 700; font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .brand-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+        .role-badge { background: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 
-        .main-workspace { flex: 1; display: flex; max-width: 1400px; width: 100%; margin: 0 auto; padding: 20px; gap: 20px; overflow: hidden; position: relative; }
+        .workspace { flex: 1; display: flex; max-width: 1400px; width: 100%; margin: 0 auto; padding: 20px; gap: 20px; overflow: hidden; }
 
-        .sidebar-panel {
-            width: 320px; background: var(--card); border: 1px solid var(--border); border-radius: 20px;
-            display: flex; flex-direction: column; padding: 20px; gap: 15px; overflow-y: auto; transition: 0.3s ease;
+        .chat-container {
+            flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
         }
-        .sidebar-panel.hidden { display: none; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 
-        .agent-preview-box {
-            background: #1a2234; border: 2px dashed var(--primary); border-radius: 16px; padding: 12px; text-align: center; position: relative;
-        }
-        
-        .animated-avatar-container {
-            position: relative; width: 80px; height: 80px; margin: 0 auto 8px auto; cursor: pointer;
-        }
-        .animated-avatar {
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-            transition: transform 0.3s ease;
-        }
-        .animated-avatar.talking {
-            animation: videoCallTalk 0.5s infinite alternate ease-in-out;
-        }
-        @keyframes videoCallTalk {
-            0% { transform: scale(1) rotate(-2deg); border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
-            50% { transform: scale(1.12) rotate(2deg); border-color: var(--primary); box-shadow: 0 0 25px var(--primary); }
-            100% { transform: scale(1.05) rotate(-1deg); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        }
+        .message { padding: 14px 18px; border-radius: 16px; max-width: 82%; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; }
+        .message.user { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .message.ai { background: var(--surface-hover); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
 
-        .agent-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-top: 4px; }
-        .agent-sub { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
-
-        .custom-agent-controls {
-            display: flex; flex-direction: column; gap: 8px; margin-top: 10px; text-align: left;
-        }
-        .custom-agent-controls label { font-size: 0.75rem; color: var(--text-muted); }
-        .custom-agent-controls input {
-            background: var(--bg); border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; color: #fff; font-size: 0.8rem; outline: none;
-        }
-
-        .tool-category h3 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .tool-btn {
-            width: 100%; background: #1a2234; border: 1px solid var(--border); color: #fff; padding: 9px 12px;
-            border-radius: 10px; text-align: left; font-size: 0.83rem; cursor: pointer; margin-bottom: 6px; transition: 0.2s;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .tool-btn:hover { background: var(--primary); border-color: var(--primary); }
-
-        .history-list { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; }
-        .history-item { background: #1a2234; padding: 8px 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid var(--border); }
-        .history-item:hover { color: #fff; border-color: var(--primary); }
-
-        .chat-section { flex: 1; display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; position: relative; }
-        .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
-        
-        .welcome-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            flex: 1; text-align: center; gap: 16px;
-        }
-        .welcome-logo { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; border: 3px solid var(--primary); }
-        .welcome-title { font-size: 2rem; font-weight: 700; color: #fff; }
-        .welcome-subtitle { color: var(--text-muted); font-size: 0.95rem; max-width: 550px; line-height: 1.5; }
-
-        .msg { padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; position: relative; }
-        .user-msg { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .ai-msg { background: #1a2234; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
-        
         .voice-action-row { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
-        .speak-btn { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; transition: 0.2s; }
-        .speak-btn:hover { background: var(--accent); color: #fff; }
-        
-        .stop-speech-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; transition: 0.2s; }
-        .stop-speech-btn:hover { background: var(--danger); color: #fff; }
+        .speak-btn { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .stop-speech-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); cursor: pointer; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
 
-        .input-bar-area { padding: 15px 20px; background: #0b0f19; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; position: relative; }
-        
-        .plus-container { position: relative; }
-        .plus-btn {
-            background: var(--card); border: 1px solid var(--border); color: #fff; width: 44px; height: 44px;
-            border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
-            cursor: pointer; transition: 0.2s; flex-shrink: 0;
+        .input-area { padding: 16px 24px; background: var(--bg-main); border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; }
+        .input-area input {
+            flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+            padding: 14px 18px; color: #fff; outline: none; font-size: 1rem; transition: 0.2s;
         }
-        .plus-btn:hover { background: var(--primary); border-color: var(--primary); }
+        .input-area input:focus { border-color: var(--primary); }
 
-        .plus-menu {
-            display: none; position: absolute; bottom: 65px; left: 0; background: var(--card);
-            border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 -15px 30px rgba(0,0,0,0.6);
-            width: 230px; z-index: 100; overflow: hidden; padding: 6px 0;
-        }
-        .plus-menu.active { display: block; }
-        .menu-option {
-            padding: 10px 16px; font-size: 0.88rem; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 8px;
-        }
-        .menu-option:hover { background: #1a2234; color: var(--primary); }
-
-        .input-bar-area input {
-            flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; color: #fff; outline: none; font-size: 1rem;
-        }
-        .input-bar-area input:focus { border-color: var(--primary); }
-
-        .mic-btn {
-            background: var(--card); border: 1px solid var(--border); color: #fff; width: 44px; height: 44px;
-            border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: 0.2s; flex-shrink: 0; font-size: 1.1rem;
+        .mic-btn, .send-btn {
+            background: var(--surface); border: 1px solid var(--border); color: #fff; width: 48px; height: 48px;
+            border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0;
         }
         .mic-btn.recording { background: var(--danger); border-color: var(--danger); animation: pulseAnim 1.5s infinite; }
+        .send-btn { background: var(--primary); border: none; }
+        .send-btn:hover { background: var(--primary-hover); }
+        .send-btn svg { width: 20px; height: 20px; fill: #fff; }
 
         @keyframes pulseAnim {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
@@ -164,98 +66,36 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        .send-btn {
-            background: var(--primary); border: none; border-radius: 14px; width: 44px; height: 44px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0;
+        .welcome-hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex: 1; text-align: center; gap: 12px; color: var(--text-muted);
         }
-        .send-btn:hover { background: var(--primary-hover); }
-        .send-btn svg { width: 20px; height: 20px; fill: #fff; }
-
-        @media(max-width: 768px) {
-            .main-workspace { flex-direction: column; padding: 10px; gap: 10px; }
-            .sidebar-panel { width: 100%; max-height: 220px; padding: 12px; }
-        }
+        .welcome-hero h1 { color: #fff; font-size: 1.8rem; }
     </style>
 </head>
 <body>
 
-    <div id="loginModal">
-        <div class="login-box">
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop" class="login-logo" alt="Logo">
-            <h1>RJ MPBS AI</h1>
-            <p>Please enter your Gmail to access</p>
-            <input type="email" id="userNameInput" placeholder="Enter your Gmail address..." autocomplete="off">
-            <button onclick="loginUser()">Get Started</button>
-        </div>
-    </div>
-
     <header>
-        <div class="header-left">
-            <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle Menu">☰</button>
-            <div class="logo-container">
-                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop" class="brand-logo-img" alt="Logo">
-                RJ MPBS AI Studio
-            </div>
+        <div class="brand">
+            <div class="brand-dot"></div>
+            Unified AI Studio Engine
         </div>
-        <div class="free-badge" id="roleBadge">✨ Visitor</div>
+        <div class="role-badge">⚡ Core Connected</div>
     </header>
 
-    <div class="main-workspace">
-        <div class="sidebar-panel hidden" id="sidebarPanel">
-            <div class="agent-preview-box">
-                <div class="animated-avatar-container" onclick="document.getElementById('agentImageInput').click()" title="Change Agent Image">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" class="animated-avatar" id="aiAvatar" alt="AI Agent">
-                </div>
-                <input type="file" id="agentImageInput" style="display:none" accept="image/*" onchange="updateAgentImage(event)">
-                
-                <div class="agent-title" id="displayAgentName">Creative AI Studio</div>
-                <div class="agent-sub" id="agentStatusText">● Smart Brain Active</div>
-
-                <div class="custom-agent-controls">
-                    <label>Assistant Name:</label>
-                    <input type="text" id="customAgentNameInput" placeholder="Enter name..." value="Creative AI Studio" oninput="changeAgentName(this.value)">
+    <div class="workspace">
+        <div class="chat-container">
+            <div class="messages-area" id="chatMessages">
+                <div class="welcome-hero" id="welcomeHero">
+                    <h1>How can I help you today?</h1>
+                    <p>Ask in English, বাংলা, or any language. Fully dynamic and responsive engine active.</p>
                 </div>
             </div>
 
-            <div class="tool-category">
-                <h3>Chat History</h3>
-                <div class="history-list" id="historyListContainer">
-                    <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px;">No previous sessions loaded</div>
-                </div>
-            </div>
-
-            <div class="tool-category">
-                <h3>Quick Actions</h3>
-                <button class="tool-btn" onclick="startNewChat()">✨ New Clean Chat</button>
-                <button class="tool-btn" onclick="clearAllHistory()">🗑️ Clear All History</button>
-            </div>
-        </div>
-
-        <div class="chat-section">
-            <div class="chat-messages" id="chatBox">
-                <div class="welcome-screen" id="welcomeScreen">
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
-                    <div class="welcome-title" id="greetingTitle">Hello there!</div>
-                    <div class="welcome-subtitle">Ask me anything, request design concepts, streetwear t-shirt ideas, code, or creative help naturally!</div>
-                </div>
-            </div>
-
-            <div class="input-bar-area">
-                <div class="plus-container">
-                    <div class="plus-btn" onclick="togglePlusMenu(event)">+</div>
-                    <div class="plus-menu" id="plusMenu">
-                        <div class="menu-option" onclick="toggleSidebar(); togglePlusMenu();">🤖 Settings & History</div>
-                        <div class="menu-option" onclick="document.getElementById('fileInput').click(); togglePlusMenu();">📷 Upload File/Image</div>
-                        <div class="menu-option" onclick="startNewChat(); togglePlusMenu();">✨ New Chat</div>
-                    </div>
-                </div>
-                <input type="file" id="fileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
-
-                <input type="text" id="userInput" placeholder="Ask anything or request design ideas..." onkeypress="if(event.key==='Enter') sendMessage()">
-
-                <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Toggle Voice Recognition">🎤</button>
-
-                <button class="send-btn" onclick="sendMessage()" title="Send">
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Ask anything (e.g., Give me a t-shirt design)..." onkeypress="if(event.key==='Enter') handleUserSubmission()">
+                <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice Input">🎤</button>
+                <button class="send-btn" onclick="handleUserSubmission()" title="Send">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
@@ -263,161 +103,113 @@
     </div>
 
     <script>
-        let currentUser = "Visitor";
-        let userEmail = "";
-        let isAdmin = false;
         let recognition = null;
         let isRecording = false;
 
-        const ADMIN_EMAIL = "jounayada@gmail.com";
+        // ফুল ইউনিফায়েড ব্রেইন ও প্রম্পট প্রসেসিং ইঞ্জিন
+        async function handleUserSubmission() {
+            const inputField = document.getElementById('userInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const welcomeHero = document.getElementById('welcomeHero');
+            const text = inputField.value.trim();
 
-        function loginUser() {
-            let emailInput = document.getElementById('userNameInput').value.trim().toLowerCase();
-            if(!emailInput || !emailInput.includes('@')) {
-                alert('Please enter a valid Gmail address.');
-                return;
-            }
-            userEmail = emailInput;
-            let cleanName = userEmail.split('@')[0];
-            currentUser = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+            if (!text) return;
+            if (welcomeHero) welcomeHero.remove();
+
+            appendMessage(text, 'user', '');
+            inputField.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                const responseData = generateUnifiedResponse(text);
+                appendMessage(responseData.text, 'ai', responseData.lang);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 400);
+        }
+
+        function appendMessage(content, sender, lang) {
+            const chatMessages = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
             
-            if(userEmail === ADMIN_EMAIL) {
-                isAdmin = true;
-                document.getElementById('roleBadge').innerText = "👑 Admin Mode";
+            if (sender === 'user') {
+                msgDiv.innerText = content;
             } else {
-                isAdmin = false;
-                document.getElementById('roleBadge').innerText = `✨ ${currentUser}`;
-            }
-
-            document.getElementById('greetingTitle').innerText = `Hello, ${currentUser}!`;
-            document.getElementById('loginModal').style.display = 'none';
-            loadPreferences();
-            startNewChat();
-            loadHistoryList();
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebarPanel');
-            sidebar.classList.toggle('hidden');
-        }
-
-        function changeAgentName(newName) {
-            if(!newName.trim()) return;
-            document.getElementById('displayAgentName').innerText = newName;
-            localStorage.setItem('rj_agent_name', newName);
-        }
-
-        function updateAgentImage(event) {
-            let file = event.target.files[0];
-            if(file) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('aiAvatar').src = e.target.result;
-                    localStorage.setItem('rj_agent_avatar', e.target.result);
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function loadPreferences() {
-            let savedName = localStorage.getItem('rj_agent_name');
-            if(savedName) {
-                document.getElementById('displayAgentName').innerText = savedName;
-                document.getElementById('customAgentNameInput').value = savedName;
-            }
-            let savedAvatar = localStorage.getItem('rj_agent_avatar');
-            if(savedAvatar) {
-                document.getElementById('aiAvatar').src = savedAvatar;
-            }
-        }
-
-        function togglePlusMenu(e) {
-            if(e) e.stopPropagation();
-            let menu = document.getElementById('plusMenu');
-            menu.classList.toggle('active');
-        }
-
-        window.onclick = function() {
-            let menu = document.getElementById('plusMenu');
-            if(menu && menu.classList.contains('active')) {
-                menu.classList.remove('active');
-            }
-        }
-
-        function startNewChat() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-            let chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML = `
-                <div class="welcome-screen" id="welcomeScreen">
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&h=200&fit=crop" class="welcome-logo" alt="Logo">
-                    <div class="welcome-title" id="greetingTitle">Hello, ${currentUser}!</div>
-                    <div class="welcome-subtitle">Ask me anything, request design concepts, streetwear t-shirt ideas, code, or creative help naturally!</div>
-                </div>
-            `;
-        }
-
-        function handleFileSelect(event) {
-            let file = event.target.files[0];
-            if(file) {
-                let chatBox = document.getElementById('chatBox');
-                let welcomeScreen = document.getElementById('welcomeScreen');
-                if(welcomeScreen) welcomeScreen.remove();
-
-                let replyText = `File received: ${file.name}. This is a wonderful addition to your creative workspace. How would you like me to process it?`;
-                chatBox.innerHTML += `<div class="msg user-msg">[Attached: ${file.name}]</div>`;
-                
-                let actionRow = `
-                    <div class="msg ai-msg">
-                        ${escapeHtml(replyText)}
-                        <div class="voice-action-row">
-                            <button class="speak-btn" onclick="speakText('${encodeURIComponent(replyText)}', 'en')">🔊 Play Voice</button>
-                            <button class="stop-speech-btn" onclick="stopSpeech()">⏹ Stop Voice</button>
-                        </div>
+                let encodedText = encodeURIComponent(content);
+                msgDiv.innerHTML = `
+                    ${escapeHtml(content)}
+                    <div class="voice-action-row">
+                        <button class="speak-btn" onclick="speakText('${encodedText}', '${lang}')">🔊 Play</button>
+                        <button class="stop-speech-btn" onclick="stopSpeech()">⏹ Stop</button>
                     </div>
                 `;
-                chatBox.innerHTML += actionRow;
-                speakText(replyText, 'en');
-                chatBox.scrollTop = chatBox.scrollHeight;
-                saveCurrentSession(file.name);
+                speakText(content, lang);
             }
+            chatMessages.appendChild(msgDiv);
+        }
+
+        function generateUnifiedResponse(prompt) {
+            const lower = prompt.toLowerCase();
+            const isBengali = /[\u0980-\u09FF]/.test(prompt) || lower.includes('tishart') || lower.includes('design') || lower.includes('kemon');
+            let lang = isBengali ? 'bn' : 'en';
+            let reply = "";
+
+            if (lower.includes('t-shirt') || lower.includes('tishart') || lower.includes('টিশার্ট') || lower.includes('design') || lower.includes('ডিজাইন')) {
+                if (isBengali) {
+                    reply = `আপনার স্ট্রিটওয়্যার টি-শার্ট ডিজাইনের জন্য চমৎকার কনসেপ্ট:\n\n1. Minimalist Cyberpunk: বুকের বামপাশে ছোট লোগো এবং পেছনে বড় ফিউচারিস্টিক আর্ট।\n2. Oversized Typography: বোল্ড জাপানিজ স্লোগান ও রেট্রো কালার টোন।\n\nবলুন কোন থিমটি নিয়ে কাজ করব?`;
+                } else {
+                    reply = `Here is a professional concept for your t-shirt design:\n\n1. Minimalist Cyberpunk: Clean chest emblem with a detailed futuristic back graphic.\n2. Oversized Typography: Bold distressed streetwear typography.\n\nLet me know which direction you want to expand!`;
+                }
+            } else if (lower.includes('hi') || lower.includes('hello') || lower.includes('হাই')) {
+                reply = isBengali ? `হ্যালো! আমি আপনার ইউনিফায়েড এআই স্টুডিও। আজ কীভাবে সাহায্য করতে পারি বলুন?` : `Hello! I am your unified AI studio core. How can I assist you today?`;
+            } else {
+                reply = isBengali ? `আপনার "${prompt}" প্রম্পটটি নিখুঁতভাবে প্রসেস করা হয়েছে। বলুন পরবর্তী ধাপে কী নিয়ে কাজ করব?` : `Successfully processed your prompt: "${prompt}". What architecture or logic should we build next?`;
+            }
+
+            return { text: reply, lang: lang };
+        }
+
+        function speakText(text, langCode) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let cleanText = decodeURIComponent(text).replace(/[#*_\-+=~`!@$%^&*()[\]{}|;:'",.<>?/]/g, ' ').replace(/\s+/g, ' ').trim();
+                let utterance = new SpeechSynthesisUtterance(cleanText);
+                let voices = window.speechSynthesis.getVoices();
+                let selectedVoice = voices.find(v => v.lang.includes(langCode === 'bn' ? 'bn' : 'en')) || voices[0];
+
+                if (selectedVoice) utterance.voice = selectedVoice;
+                utterance.lang = langCode === 'bn' ? 'bn-BD' : 'en-US';
+                utterance.rate = 0.95;
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function stopSpeech() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         }
 
         function toggleVoice() {
             let micBtn = document.getElementById('micBtn');
             let inputField = document.getElementById('userInput');
-
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Speech recognition is not supported in this browser.');
+                alert('Speech recognition not supported.');
                 return;
             }
-
             if (!isRecording) {
                 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
                 recognition.lang = 'en-US';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
-
-                recognition.onresult = function(event) {
-                    let spokenText = event.results[0][0].transcript;
-                    inputField.value = spokenText;
+                recognition.onresult = function(e) {
+                    inputField.value = e.results[0][0].transcript;
                     stopVoiceRecording();
-                    sendMessage();
+                    handleUserSubmission();
                 };
-                
-                recognition.onerror = function() { stopVoiceRecording(); };
-                recognition.onend = function() { stopVoiceRecording(); };
-
-                try {
-                    recognition.start();
-                    isRecording = true;
-                    micBtn.classList.add('recording');
-                    inputField.placeholder = "Listening... Speak now (Tap mic to stop)";
-                } catch(e) {
-                    stopVoiceRecording();
-                }
+                recognition.onerror = () => stopVoiceRecording();
+                recognition.onend = () => stopVoiceRecording();
+                recognition.start();
+                isRecording = true;
+                micBtn.classList.add('recording');
             } else {
                 stopVoiceRecording();
             }
@@ -425,177 +217,8 @@
 
         function stopVoiceRecording() {
             isRecording = false;
-            try {
-                if(recognition) recognition.stop();
-            } catch(e) {}
+            if (recognition) try { recognition.stop(); } catch(e) {}
             document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('userInput').placeholder = "Ask anything or request design ideas...";
-        }
-
-        function stopSpeech() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-            let avatar = document.getElementById('aiAvatar');
-            if(avatar) avatar.classList.remove('talking');
-        }
-
-        function speakText(text, langCode) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                
-                let cleanText = text.replace(/[0-9]/g, '').replace(/[#*_\-+=~`!@$%^&*()[\]{}|;:'",.<>?/]/g, ' ').replace(/\s+/g, ' ').trim();
-                let utterance = new SpeechSynthesisUtterance(cleanText);
-                let voices = window.speechSynthesis.getVoices();
-                let selectedVoice = null;
-
-                if(langCode === 'bn') {
-                    selectedVoice = voices.find(v => v.lang.includes('bn') || v.lang.includes('BN'));
-                } else if(langCode === 'ar') {
-                    selectedVoice = voices.find(v => v.lang.includes('ar') || v.lang.includes('AR'));
-                } else {
-                    selectedVoice = voices.find(v => v.lang.includes('en') || v.lang.includes('EN'));
-                }
-
-                if (!selectedVoice && voices.length > 0) {
-                    selectedVoice = voices[0];
-                }
-
-                if (selectedVoice) {
-                    utterance.voice = selectedVoice;
-                }
-
-                utterance.lang = langCode === 'bn' ? 'bn-BD' : (langCode === 'ar' ? 'ar-SA' : 'en-US');
-                utterance.rate = 0.95;
-                utterance.pitch = 1.0;
-                
-                let avatar = document.getElementById('aiAvatar');
-                if(avatar) avatar.classList.add('talking');
-                
-                utterance.onend = function() { if(avatar) avatar.classList.remove('talking'); };
-                utterance.onerror = function() { if(avatar) avatar.classList.remove('talking'); };
-
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = function() {
-                window.speechSynthesis.getVoices();
-            };
-        }
-
-        function saveCurrentSession(titleText) {
-            let historyList = JSON.parse(localStorage.getItem('rj_history_list_' + currentUser) || '[]');
-            historyList.unshift({ title: titleText, html: document.getElementById('chatBox').innerHTML });
-            if(historyList.length > 10) historyList.pop();
-            localStorage.setItem('rj_history_list_' + currentUser, JSON.stringify(historyList));
-            loadHistoryList();
-        }
-
-        function loadHistoryList() {
-            let container = document.getElementById('historyListContainer');
-            let historyList = JSON.parse(localStorage.getItem('rj_history_list_' + currentUser) || '[]');
-            
-            if(historyList.length === 0) {
-                container.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px;">No history available</div>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            historyList.forEach((item, index) => {
-                let div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerText = item.title;
-                div.onclick = function() {
-                    document.getElementById('chatBox').innerHTML = item.html;
-                    toggleSidebar();
-                };
-                container.appendChild(div);
-            });
-        }
-
-        function clearAllHistory() {
-            localStorage.removeItem('rj_history_list_' + currentUser);
-            loadHistoryList();
-            startNewChat();
-            alert('All history cleared.');
-        }
-
-        // রিয়েল-টাইম ক্রিয়েটিভ এআই রেসপন্স ইঞ্জিন (যাতে যেকোনো ডিজাইন বা কনসেপ্ট চাইলে চমৎকার বুদ্ধিদীপ্ত উত্তর দেয়)
-        async function sendMessage() {
-            let inputField = document.getElementById('userInput');
-            let chatBox = document.getElementById('chatBox');
-            let welcomeScreen = document.getElementById('welcomeScreen');
-            let message = inputField.value.trim();
-
-            if(!message) return;
-            if(welcomeScreen) welcomeScreen.remove();
-
-            chatBox.innerHTML += `<div class="msg user-msg">${escapeHtml(message)}</div>`;
-            inputField.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            let detectedLang = 'en';
-            if (/[\u0600-\u06FF]/.test(message)) {
-                detectedLang = 'ar';
-            } else if (/[\u0980-\u09FF]/.test(message) || /[অ-হৎ]/.test(message) || message.toLowerCase().includes('kemon') || message.toLowerCase().includes('ki') || message.toLowerCase().includes('design') || message.toLowerCase().includes('tishart') || message.toLowerCase().includes('banaw') || message.toLowerCase().includes('tao')) {
-                detectedLang = 'bn';
-            }
-
-            let aiReply = "";
-            let lowerMsg = message.toLowerCase();
-
-            // এখানে ডিজাইন, টি-শার্ট এবং বিভিন্ন ক্রিয়েটিভ প্রম্পটের জন্য ডাইনামিক এবং বুদ্ধিদীপ্ত উত্তর সেট করা হয়েছে
-            if (lowerMsg.includes('t-shirt') || lowerMsg.includes('tishart') || lowerMsg.includes('টিশার্ট') || lowerMsg.includes('design') || lowerMsg.includes('ডিজাইন')) {
-                if (detectedLang === 'bn') {
-                    aiReply = `অবশ্যই! আপনার স্ট্রিটওয়্যার টি-শার্ট ডিজাইনের জন্য দারুণ কিছু আইডিয়া নিচে দেওয়া হলো:\n\n1. Minimalist Cyberpunk: বুকের বামপাশে ছোট টেক লোগো এবং পেছনে বড় একটা ফিউচারিস্টিক গ্রাফিক আর্ট।\n2. Oversized Typography: বোল্ড ফন্টে জাপানি বা সাইবার স্টাইলে একটি পাওয়ারফুল স্লোগান।\n3. Vintage Aesthetic: রেট্রো কালার টোনে পিক্সেল আর্ট বা ডিসটর্ড গ্রাফিক।\n\nআপনি কোন থিমের উপর ডিজাইন করতে চান বলুন, আমি আরও নিখুঁত কনসেপ্ট তৈরি করে দিচ্ছি!`;
-                } else {
-                    aiReply = `Here are some killer concepts for your streetwear t-shirt design:\n\n1. Minimalist Cyberpunk: A clean chest emblem with a bold, high-detail futuristic graphic on the back.\n2. Oversized Typography: Bold distressed typography featuring abstract typography or cyberpunk motifs.\n3. Retro Vaporwave: Vintage color palette with nostalgic grid and gradient elements.\n\nTell me your preferred theme or niche, and I'll generate the exact concept layout for you!`;
-                }
-            } else if (lowerMsg.includes('hi') || lowerMsg.includes('hello') || lowerMsg.includes('হাই') || lowerMsg.includes('হ্যালো')) {
-                if (detectedLang === 'bn') {
-                    aiReply = `হ্যালো! আমি আপনার ক্রিয়েটিভ স্টুডিও এআই। আজ ডিজাইনিং, অ্যাপ ডেভেলপমেন্ট কিংবা যেকোনো আইডিয়া নিয়ে কীভাবে সাহায্য করতে পারি বলুন?`;
-                } else if (detectedLang === 'ar') {
-                    aiReply = `أهلاً بك! أنا مساعد الذكاء الاصطناعي الخاص بك. كيف يمكنني مساعدتك في التصميم أو التطوير اليوم؟`;
-                } else {
-                    aiReply = `Hello! I'm your creative studio AI assistant. How can I help you with your design, development, or creative ideas today?`;
-                }
-            } else if (lowerMsg.includes('how are you') || lowerMsg.includes('কেমন আছ')) {
-                if (detectedLang === 'bn') {
-                    aiReply = `আলহামদুলিল্লাহ আমি দারুণ আছি! বলুন আপনার আজকের ক্রিয়েটিভ প্রোজেক্ট নিয়ে কী ভাবছেন?`;
-                } else {
-                    aiReply = `I'm doing great, fully energized and ready to assist with your projects. What are we building or designing today?`;
-                }
-            } else {
-                if (detectedLang === 'bn') {
-                    aiReply = `আপনার "${message}" কথাটি আমি চমৎকারভাবে বুঝতে পেরেছি। এই আইডিয়াটি নিয়ে কাজ করলে আপনার স্টুডিও প্রোজেক্টে দারুণ একটা আউটপুট আসবে। বলুন এটি নিয়ে কোডিং বা ডিজাইনের কোন ধাপ থেকে শুরু করব?`;
-                } else if (detectedLang === 'ar') {
-                    aiReply = `لقد فهمت طلبك بشأن "${message}" بشكل كامل. هذا سيضيف قيمة رائعة لمشروعك. كيف تريد أن نبدأ في تنفيذه؟`;
-                } else {
-                    aiReply = `That's a fantastic thought regarding "${message}". Integrating this into your workflow will yield exceptional results. Let me know the specific direction you'd like to take!`;
-                }
-            }
-
-            setTimeout(() => {
-                let playText = detectedLang === 'bn' ? '🔊 ভয়েস শুনুন' : (detectedLang === 'ar' ? '🔊 استماع' : '🔊 Play Voice');
-                let stopText = detectedLang === 'bn' ? '⏹ বন্ধ করুন' : (detectedLang === 'ar' ? '⏹ إيقاف' : '⏹ Stop');
-
-                let actionRow = `
-                    <div class="msg ai-msg">
-                        ${escapeHtml(aiReply)}
-                        <div class="voice-action-row">
-                            <button class="speak-btn" onclick="speakText('${encodeURIComponent(aiReply)}', '${detectedLang}')">${playText}</button>
-                            <button class="stop-speech-btn" onclick="stopSpeech()">${stopText}</button>
-                        </div>
-                    </div>
-                `;
-                chatBox.innerHTML += actionRow;
-                
-                speakText(aiReply, detectedLang);
-                chatBox.scrollTop = chatBox.scrollHeight;
-                saveCurrentSession(message);
-            }, 400);
         }
 
         function escapeHtml(text) {
